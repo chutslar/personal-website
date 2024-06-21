@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" style={{ height: "100%" }}>
       <head>
         <link
           rel="icon"
@@ -29,7 +29,7 @@ export default function RootLayout({
       </head>
       <AppRouterCacheProvider>
         <ThemeProvider theme={theme}>
-          <body className={montserrat.className}>{children}</body>
+          <body className={montserrat.className} style={{ height: "100%" }}>{children}</body>
         </ThemeProvider>
       </AppRouterCacheProvider>
     </html>

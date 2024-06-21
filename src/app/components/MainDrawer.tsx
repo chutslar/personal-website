@@ -12,7 +12,7 @@ export const drawerItems = [
   {
     key: "rosary_tracker",
     title: "Rosary Tracker",
-    link: "#"
+    link: "/rosary-tracker"
   }
 ]
 
