@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --primary-color: #237b93;
+  --primary-color-dark: #155967;
+}
+
+.drawer-box {
+  padding-left: 18px;
+  padding-top: 64px;
+}
+
+@media (orientation: landscape) {
+  .drawer-box {
+    padding-top: 48px;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

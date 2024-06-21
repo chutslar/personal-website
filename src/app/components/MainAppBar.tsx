@@ -5,7 +5,7 @@ import Link from "next/link";
 export function MainAppBar() {
   return <AppBar
     position="fixed"
-    sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
+    sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px`}}
   >
     <Toolbar>
       <Link href="/">
