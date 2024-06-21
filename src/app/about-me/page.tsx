@@ -18,7 +18,7 @@ export default function AboutMe() {
         <Divider />
         <AboutMeItem snippet="I am a software engineer who works from home, currently living in Indiana." />
         <AboutMeItem snippet="At work I mostly use Java, but I also sometimes use Typescript with React - this website is made with Next.js using Cloudflare Pages." />
-        <AboutMeItem snippet={`I have a cute cat named Nico who is ${new Date(Date.now().valueOf() - new Date("April 4, 2021 12:00:00").valueOf()).getUTCFullYear() - 1970} years old.`} />
+        <AboutMeItem snippet={`I have a cute cat named Nico who is ${new Date(Date.now().valueOf() - new Date("April 3, 2021 12:00:00").valueOf()).getUTCFullYear() - 1970} years old.`} />
         <Image src={Nico} alt="Nico"/>
       </Box>
     </Main>
