@@ -104,7 +104,7 @@ export default function RosaryTracker() {
                   src={currentMystery.image.image} 
                   style={{
                     maxHeight: "500px",
-                    maxWidth: "500px",
+                    maxWidth: "min(500px, calc(100% - 80px))",
                     height: "auto",
                     width: "auto",
                     padding: "8px",
