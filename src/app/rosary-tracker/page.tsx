@@ -13,6 +13,7 @@ import type Mystery from "../types/Mystery";
 import Image from "next/image";
 import { fullRosary } from "../utils/Prayers";
 import { ChevronLeftSharp, ChevronRightSharp } from "@mui/icons-material";
+import { getMysteryCategory } from "../utils/RosaryMysteries";
 
 function initialState(): ReadonlyDeep<RosaryTrackerState> {
   return {
@@ -41,7 +42,8 @@ export default function RosaryTracker() {
   const currentMystery = useMemo(() => state.mysteryResponseData?.mysteries[state.mysteryIndex], [state]);
   useEffectOnce(() => {
     const fetchData = async () => {
-      const response = await fetch(`/api/rosary/mystery?date=${formatISO(Date.now())}`);
+      const mysteryCategory = getMysteryCategory(new Date());
+      const response = await fetch(`/api/rosary/mystery?category=${mysteryCategory}`);
       if (response.ok) {
         const mysteryResponseData: MysteryResponseData = await response.json();
         dispatch({

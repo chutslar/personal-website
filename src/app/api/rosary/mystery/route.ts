@@ -1,19 +1,22 @@
 import type { NextRequest } from 'next/server'
-import { formatISO, parseISO } from 'date-fns'
-import { getMysteries, getMysteryCategory } from '@/app/utils/RosaryMysteries'
+import { getMysteries } from '@/app/utils/RosaryMysteries'
 import MysteryResponseData from '@/app/types/MysteryResponseData'
+import MysteryCategory from '@/app/types/MysteryCategory'
 
 export const runtime = 'edge'
 
 export async function GET(request: NextRequest) {
-  const userDateString = request.nextUrl.searchParams.get("date");
-  const userDate = userDateString ? parseISO(userDateString) : new Date();
-  const category = getMysteryCategory(userDate);
+  const categoryString = request.nextUrl.searchParams.get("category");
+  if (!categoryString) {
+    return new Response("Request missing required param category", {
+      status: 400,
+    })
+  }
+  const category = categoryString as MysteryCategory
   const mysteries = getMysteries(category);
   const mysteryResponseData : MysteryResponseData = {
     category,
     mysteries,
-    metadata: `Using date ${formatISO(userDate)}`,
   };
 
   return new Response(JSON.stringify(mysteryResponseData));
