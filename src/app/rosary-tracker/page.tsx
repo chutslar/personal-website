@@ -73,18 +73,19 @@ export default function RosaryTracker() {
   return (
     <Main>
       <Box textAlign="center" sx={{ height: "100%" }}>
-        <Typography variant="h3">Rosary Tracker</Typography>
+        <Typography variant="h5">Rosary Tracker</Typography>
         <Divider />
         {state.mysteryResponseData && currentMystery &&
           <Box sx={{
             display: "flex",
             flexDirection: "column",
-            justifyContent: "space-evenly",
+            justifyContent: "space-between",
             height: "100%",
+            paddingTop: "6px",
           }}>
             <Box>
               <Typography variant="body1">{format(state.date, "eee MMM d")}</Typography>
-              <Typography variant="h5" fontWeight="bold">{state.mysteryResponseData.category}</Typography>
+              <Typography variant="h6" fontWeight="bold">{state.mysteryResponseData.category}</Typography>
               <Typography variant="body1">{currentMystery.name}</Typography>
             </Box>
             <Card>
@@ -106,7 +107,7 @@ export default function RosaryTracker() {
                   src={currentMystery.image.image} 
                   style={{
                     maxHeight: "500px",
-                    maxWidth: "min(500px, calc(100% - 80px))",
+                    maxWidth: "min(500px, calc(100% - 60px))",
                     height: "auto",
                     width: "auto",
                     padding: "8px",
