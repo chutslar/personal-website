@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server'
-import { parseISO } from 'date-fns'
+import { formatISO, parseISO } from 'date-fns'
 import { getMysteries, getMysteryCategory } from '@/app/utils/RosaryMysteries'
 import MysteryResponseData from '@/app/types/MysteryResponseData'
 
@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
   const mysteryResponseData : MysteryResponseData = {
     category,
     mysteries,
+    metadata: `Using date ${formatISO(userDate)}`,
   };
 
   return new Response(JSON.stringify(mysteryResponseData));

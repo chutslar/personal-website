@@ -4,6 +4,7 @@ import MysteryCategory from "./MysteryCategory"
 type MysteryResponseData = {
   category: MysteryCategory;
   mysteries: Mystery[];
+  metadata?: string;
 };
 
 export default MysteryResponseData;
