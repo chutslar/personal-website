@@ -1,5 +1,5 @@
 import OActionType from "../enums/OActionType";
 
-export default interface EnableInteractive {
-  type: typeof OActionType.EnableInteractive;
+export default interface ToggleInteractive {
+  type: typeof OActionType.ToggleInteractive;
 }

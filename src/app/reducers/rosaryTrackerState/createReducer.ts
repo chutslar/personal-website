@@ -1,7 +1,7 @@
 import RosaryTrackerState from "@/app/types/RosaryTrackerState";
 import OActionType from "./enums/OActionType";
 import RosaryTrackerStateReducer from "./types/RosaryTrackerStateReducer";
-import { fullRosary } from "@/app/utils/Prayers";
+import { fullRosary } from "@/app/utils/prayers";
 import Action from "./types/Action";
 import { ReadonlyDeep } from "type-fest";
 
@@ -55,16 +55,10 @@ export default function createReducer(): RosaryTrackerStateReducer {
           return reducer(state, {type: OActionType.PreviousMystery});
         }
       }
-      case OActionType.EnableInteractive: {
+      case OActionType.ToggleInteractive: {
         return {
           ...state,
-          isInteractive: true,
-        };
-      }
-      case OActionType.DisableInteractive: {
-        return {
-          ...state,
-          isInteractive: false,
+          isInteractive: !state.isInteractive,
         };
       }
       case OActionType.HitDoneButton: {

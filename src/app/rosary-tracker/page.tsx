@@ -1,8 +1,8 @@
 "use client"; 
-import { Box, Card, Divider, IconButton, Typography } from "@mui/material";
+import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, Typography } from "@mui/material";
 import { Main } from "../components/Main";
 import type MysteryResponseData from "../types/MysteryResponseData";
-import { KeyboardEvent, useMemo, useReducer } from "react";
+import { KeyboardEvent, useCallback, useMemo, useReducer, useState } from "react";
 import { useEffectOnce } from "react-use";
 import { format, formatISO } from "date-fns";
 import createReducer from "../reducers/rosaryTrackerState/createReducer";
@@ -11,9 +11,13 @@ import type RosaryTrackerState from "../types/RosaryTrackerState";
 import OActionType from "../reducers/rosaryTrackerState/enums/OActionType";
 import type Mystery from "../types/Mystery";
 import Image from "next/image";
-import { fullRosary } from "../utils/Prayers";
-import { ChevronLeftSharp, ChevronRightSharp } from "@mui/icons-material";
-import { getMysteryCategory } from "../utils/RosaryMysteries";
+import { fullRosary } from "../utils/prayers";
+import { ChevronLeftSharp, ChevronRightSharp, Info } from "@mui/icons-material";
+import { getMysteryCategory } from "../utils/rosaryMysteries";
+import Row from "../components/Row";
+import { Chivo_Mono } from "next/font/google";
+
+const chivo = Chivo_Mono({ subsets: ["latin"] });
 
 function initialState(): ReadonlyDeep<RosaryTrackerState> {
   return {
@@ -40,6 +44,8 @@ function isLastPrayer(state: ReadonlyDeep<RosaryTrackerState>): boolean {
 export default function RosaryTracker() {
   const [state, dispatch] = useReducer(createReducer(), initialState());
   const currentMystery = useMemo(() => state.mysteryResponseData?.mysteries[state.mysteryIndex], [state]);
+  const [isPrayerDialogOpen, setPrayerDialogOpen] = useState(false);
+
   useEffectOnce(() => {
     const fetchData = async () => {
       const mysteryCategory = getMysteryCategory(new Date());
@@ -88,6 +94,44 @@ export default function RosaryTracker() {
               <Typography variant="h6" fontWeight="bold">{state.mysteryResponseData.category}</Typography>
               <Typography variant="body1">{currentMystery.name}</Typography>
             </Box>
+            {state.isInteractive &&
+              <Box sx={{
+                display: "flex",
+                flexDirection: "row",
+                width: "400px",
+                justifyContent: "space-between",
+                alignSelf: "center",
+              }}>
+                <IconButton onClick={() => dispatch({type: OActionType.PreviousPrayer})}>
+                  <ChevronLeftSharp />
+                </IconButton>
+                <Row sx={{justifyContent: "center"}}>
+                  <Typography style={{alignSelf: "end"}} variant="body1">{fullRosary[state.mysteryIndex][state.prayerIndex].name}</Typography>
+                  <IconButton style={{color: "var(--primary-color)"}} size="small" onClick={() => setPrayerDialogOpen(true)}>
+                    <Info />
+                  </IconButton>
+                  <Dialog
+                    open={isPrayerDialogOpen}
+                    keepMounted
+                    onClose={() => setPrayerDialogOpen(false)}
+                    aria-describedby="prayer-dialog"
+                  >
+                    <DialogTitle>{fullRosary[state.mysteryIndex][state.prayerIndex].name}</DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="prayer-text">
+                        <Typography variant="body2"><pre className={chivo.className}>{fullRosary[state.mysteryIndex][state.prayerIndex].text}</pre></Typography>
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={() => setPrayerDialogOpen(false)}><Typography variant="button">Close</Typography></Button>
+                    </DialogActions>
+                  </Dialog>
+                </Row>
+                <IconButton onClick={() => dispatch({type: OActionType.NextPrayer})}>
+                  <ChevronRightSharp />
+                </IconButton>
+              </Box>
+            }
             <Card>
               <Box sx={{
                 display: "flex",
@@ -124,6 +168,18 @@ export default function RosaryTracker() {
               </Box>
               <Typography sx={{display: "block", maxWidth: "400px"}} variant="caption">{currentMystery.image.caption}</Typography>
             </Card>
+            <Row sx={{justifyContent:"space-around"}}>
+              <Button sx={{background: "var(--primary-color)", color: "white"}} onClick={() => dispatch({type: OActionType.ToggleInteractive})}>
+                <Typography variant="button">{state.isInteractive ? "Turn Walkthrough Off" : "Walk Me Through It"}</Typography>
+              </Button>
+              <Button
+                sx={{background: "var(--primary-color)", color: "white"}}
+                disabled={state.hitDoneButton || !isLastMystery(state) || (state.isInteractive && !isLastPrayer(state))}
+                onClick={() => dispatch({type: OActionType.HitDoneButton})
+              }>
+                <Typography variant="button">Done</Typography>
+              </Button>
+            </Row>
           </Box>
         }
       </Box>

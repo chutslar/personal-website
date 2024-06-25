@@ -26,6 +26,7 @@ export default function RootLayout({
           type="image/svg"
           sizes="any"
         />
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
       </head>
       <AppRouterCacheProvider>
         <ThemeProvider theme={theme}>

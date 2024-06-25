@@ -3,7 +3,7 @@ import OMysteryName from "../enums/OMysteryName";
 import { imageRecord } from "../types/ImageRecord";
 import Mystery, { mystery } from "../types/Mystery";
 import MysteryCategory from "../types/MysteryCategory";
-import { isAdvent, isLent } from "./Dates";
+import { isAdvent, isLent } from "./dates";
 import * as Assets from "../assets/index";
 import { format } from "date-fns";
 

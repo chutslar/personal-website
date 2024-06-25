@@ -23,7 +23,7 @@ export default function AboutMe() {
     </Main>
   );
 }
+
 function AboutMeItem(props: {snippet: string}) {
   return <Typography variant="body1" padding="12px 24px" align="center">{props.snippet}</Typography>;
 }
-

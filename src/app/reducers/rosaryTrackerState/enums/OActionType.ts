@@ -3,8 +3,7 @@ const OActionType = {
   PreviousMystery: "PreviousMystery",
   NextPrayer: "NextPrayer",
   PreviousPrayer: "PreviousPrayer",
-  EnableInteractive: "EnableInteractive",
-  DisableInteractive: "DisableInteractive",
+  ToggleInteractive: "ToggleInteractive",
   HitDoneButton: "HitDoneButton",
   SetMysteryResponseData: "SetMysteryResponseData",
 } as const;
