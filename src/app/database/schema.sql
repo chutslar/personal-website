@@ -11,3 +11,4 @@ CREATE TABLE IF NOT EXISTS Users (
     pausedGloriousMysteryIndex INTEGER,
     pausedLuminousMysteryIndex INTEGER
 );
+CREATE INDEX IF NOT EXISTS idx_Users_userName ON Users(userName);

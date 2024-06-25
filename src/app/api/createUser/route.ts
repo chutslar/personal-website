@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server'
 import { getRequestContext } from '@cloudflare/next-on-pages'
 import verifyTurnstileToken from '../turnstile-verify/verifyTurnstileToken';
-import { getUserExists } from '@/app/database/databaseMethods';
+import { createUser, getUserExists } from '@/app/database/databaseMethods';
 
 export const runtime = 'edge'
 
@@ -25,5 +25,12 @@ export async function POST(request: NextRequest) {
       status: 403,
     });
   }
-  return new Response(userName);
+
+  const createSuccess = await createUser(db, userName);
+  if (createSuccess) {
+    return new Response(userName);
+  }
+  return new Response("Failed to create user account", {
+    status: 500,
+  });
 }
