@@ -11,9 +11,9 @@ import type RosaryTrackerState from "../types/RosaryTrackerState";
 import OActionType from "../reducers/rosaryTrackerState/enums/OActionType";
 import type Mystery from "../types/Mystery";
 import Image from "next/image";
-import { fullRosary } from "../utils/prayers";
+import { fullRosary } from "../utils/Prayers";
 import { ChevronLeftSharp, ChevronRightSharp, Info } from "@mui/icons-material";
-import { getMysteryCategory } from "../utils/rosaryMysteries";
+import { getMysteryCategory } from "../utils/RosaryMysteries";
 import Row from "../components/Row";
 import { Chivo_Mono } from "next/font/google";
 

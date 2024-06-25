@@ -1,7 +1,7 @@
 import RosaryTrackerState from "../../types/RosaryTrackerState";
 import OActionType from "./enums/OActionType";
 import RosaryTrackerStateReducer from "./types/RosaryTrackerStateReducer";
-import { fullRosary } from "../../utils/prayers";
+import { fullRosary } from "../../utils/Prayers";
 import Action from "./types/Action";
 import { ReadonlyDeep } from "type-fest";
 

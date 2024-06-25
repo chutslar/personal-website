@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server'
-import { getMysteries } from '../../../utils/rosaryMysteries'
-import MysteryResponseData from '@/app/types/MysteryResponseData'
-import MysteryCategory from '@/app/types/MysteryCategory'
+import { getMysteries } from '../../../utils/RosaryMysteries'
+import type MysteryResponseData from '../../../types/MysteryResponseData'
+import type MysteryCategory from '../../../types/MysteryCategory'
 
 export const runtime = 'edge'
 
