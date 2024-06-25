@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server'
-import { getMysteries } from '@/app/utils/rosaryMysteries'
+import { getMysteries } from '../../../utils/rosaryMysteries'
 import MysteryResponseData from '@/app/types/MysteryResponseData'
 import MysteryCategory from '@/app/types/MysteryCategory'
 
