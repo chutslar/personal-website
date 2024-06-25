@@ -11,9 +11,9 @@ export async function getUserExists(db: D1Database, userName: string): Promise<b
 
 export async function createUser(db: D1Database, userName: string): Promise<boolean> {
   const { success } = await db.prepare(
-    "INSERT INTO Users (userName) SELECT userName=? WHERE NOT EXISTS (SELECT 1 FROM Users WHERE userName = ? LIMIT 1)"
+    "INSERT INTO Users (userName) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM Users WHERE userName = ? LIMIT 1)"
   )
-    .bind(userName)
+    .bind(userName, userName)
     .run();
   return success;
 }
