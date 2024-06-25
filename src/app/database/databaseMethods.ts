@@ -1,27 +1,50 @@
 import UserData from "../types/UserData";
 
-export async function getUserExists(db: D1Database, userName: string): Promise<boolean> {
-  const { results } = await db.prepare(
-    "SELECT 1 FROM Users WHERE userName = ? LIMIT 1"
-  )
+/**
+ * @param db The D1 database
+ * @param userName The username
+ * @returns True if there is a user with that name, false otherwise
+ */
+export async function getUserExists(
+  db: D1Database,
+  userName: string,
+): Promise<boolean> {
+  const { results } = await db
+    .prepare("SELECT 1 FROM Users WHERE userName = ? LIMIT 1")
     .bind(userName)
     .all();
   return results.length > 0;
 }
 
-export async function createUser(db: D1Database, userName: string): Promise<boolean> {
-  const { success } = await db.prepare(
-    "INSERT INTO Users (userName) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM Users WHERE userName = ? LIMIT 1)"
-  )
+/**
+ * @param db The D1 database
+ * @param userName The username
+ * @returns True if the operation succeeded, false otherwise
+ */
+export async function createUser(
+  db: D1Database,
+  userName: string,
+): Promise<boolean> {
+  const { success } = await db
+    .prepare(
+      "INSERT INTO Users (userName) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM Users WHERE userName = ? LIMIT 1)",
+    )
     .bind(userName, userName)
     .run();
   return success;
 }
 
-export async function getUserData(db: D1Database, userName: string): Promise<UserData | undefined> {
-  const { results } = await db.prepare(
-    "SELECT * FROM Users WHERE userName = ? LIMIT 1"
-  )
+/**
+ * @param db The D1 database
+ * @param userName The username
+ * @returns The existing user data for the user, or undefined if there is none
+ */
+export async function getUserData(
+  db: D1Database,
+  userName: string,
+): Promise<UserData | undefined> {
+  const { results } = await db
+    .prepare("SELECT * FROM Users WHERE userName = ? LIMIT 1")
     .bind(userName)
     .all();
   if (results.length == 0) {
@@ -29,7 +52,7 @@ export async function getUserData(db: D1Database, userName: string): Promise<Use
   }
   return {
     ...results[0],
-  }
+  };
 }
 
 function repeat(s: string, n: number, delimiter: string = "") {
@@ -43,60 +66,71 @@ function repeat(s: string, n: number, delimiter: string = "") {
   return result;
 }
 
-export async function updateUserData(db: D1Database, userName: string, updates: Partial<UserData>): Promise<boolean> {
+/**
+ *
+ * @param db The D1 database
+ * @param userName The username
+ * @param updates The user data fields that need to be updated with their new values
+ * @returns True if the operation succeeded, false otherwise
+ */
+export async function updateUserData(
+  db: D1Database,
+  userName: string,
+  updates: Partial<UserData>,
+): Promise<boolean> {
   if (!(await getUserExists(db, userName))) {
     return false;
   }
-  let setString = "";
+  let setStrings = [];
   let valuesCount = 0;
   let bindValues: any[] = [];
   if (updates.firstRosaryDate) {
-    setString += "firstRosaryDate=? ";
+    setStrings.push("firstRosaryDate=? ");
     bindValues.push(updates.firstRosaryDate);
     ++valuesCount;
   }
   if (updates.lastRosaryDate) {
-    setString += "lastRosaryDate=? ";
+    setStrings.push("lastRosaryDate=? ");
     bindValues.push(updates.lastRosaryDate);
     ++valuesCount;
   }
   if (updates.totalRosaries) {
-    setString += "totalRosaries=? ";
+    setStrings.push("totalRosaries=? ");
     bindValues.push(updates.totalRosaries);
     ++valuesCount;
   }
   if (updates.currentStreak) {
-    setString += "currentStreak=? ";
+    setStrings.push("currentStreak=? ");
     bindValues.push(updates.currentStreak);
     ++valuesCount;
   }
   if (updates.pausedJoyfulMysteryIndex) {
-    setString += "pausedJoyfulMysteryIndex=? ";
+    setStrings.push("pausedJoyfulMysteryIndex=? ");
     bindValues.push(updates.pausedJoyfulMysteryIndex);
     ++valuesCount;
   }
   if (updates.pausedSorrowfulMysteryIndex) {
-    setString += "pausedSorrowfulMysteryIndex=? ";
+    setStrings.push("pausedSorrowfulMysteryIndex=? ");
     bindValues.push(updates.pausedSorrowfulMysteryIndex);
     ++valuesCount;
   }
   if (updates.pausedGloriousMysteryIndex) {
-    setString += "pausedGloriousMysteryIndex=? ";
+    setStrings.push("pausedGloriousMysteryIndex=? ");
     bindValues.push(updates.pausedGloriousMysteryIndex);
     ++valuesCount;
   }
   if (updates.pausedLuminousMysteryIndex) {
-    setString += "pausedLuminousMysteryIndex=? ";
+    setStrings.push("pausedLuminousMysteryIndex=? ");
     bindValues.push(updates.pausedLuminousMysteryIndex);
     ++valuesCount;
   }
-  if (setString.length == 0) {
+  if (setStrings.length == 0) {
     return true;
   }
-  const { success } = await db.prepare(
-    `UPDATE Users SET ${setString} VALUES(${repeat("?", valuesCount, ", ")})`
-  )
-    .bind(...bindValues)
+  const updateString = `UPDATE Users SET ${setStrings.join(", ")} WHERE userName=?;`;
+  const { success } = await db
+    .prepare(updateString)
+    .bind(...bindValues, userName)
     .run();
   return success;
 }

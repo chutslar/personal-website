@@ -1,5 +1,5 @@
 import Mystery from "./Mystery";
-import MysteryCategory from "./MysteryCategory"
+import MysteryCategory from "./MysteryCategory";
 
 type MysteryResponseData = {
   category: MysteryCategory;

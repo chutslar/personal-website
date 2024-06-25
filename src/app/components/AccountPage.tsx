@@ -12,7 +12,7 @@ export default function AccountPage() {
   const logout = () => {
     deleteCookie("userName");
     setLoggedInUserName("");
-  }
+  };
   useEffect(() => {
     if (mounted) {
       const userNameCookie = getCookie("userName");
@@ -27,23 +27,31 @@ export default function AccountPage() {
         Your Data
       </Typography>
       <Divider />
-      <Box sx={{
-        paddingTop: "16px",
-      }}>
-        {loggedInUserName &&
-          <Box sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}>
-            <Typography variant="body1">Username: {loggedInUserName}</Typography>
-            <Link component="button" variant="body1" onClick={logout}>Sign out</Link>
+      <Box
+        sx={{
+          paddingTop: "16px",
+        }}
+      >
+        {loggedInUserName && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="body1">
+              Username: {loggedInUserName}
+            </Typography>
+            <Link component="button" variant="body1" onClick={logout}>
+              Sign out
+            </Link>
           </Box>
-        }
-        {!loggedInUserName &&
+        )}
+        {!loggedInUserName && (
           <LoginScreen setLoggedInUserName={setLoggedInUserName} />
-        }
+        )}
       </Box>
     </Box>
-  )
+  );
 }

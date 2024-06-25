@@ -1,7 +1,8 @@
 import PrayerRecord, { prayerRecord } from "../types/PrayerRecord";
 
 const sign_cross = "The Sign of the Cross";
-const sign_cross_text = "In the name of the Father, and of the Son, and of the Holy Spirit. Amen.";
+const sign_cross_text =
+  "In the name of the Father, and of the Son, and of the Holy Spirit. Amen.";
 
 const apostles_creed = "The Apostles' Creed";
 const apostles_creed_text = `I believe in God,
@@ -55,7 +56,8 @@ world without end.
 Amen.`;
 
 const fatima_prayer = "The Fatima Prayer";
-const fatima_prayer_text = "O my Jesus, forgive us our sins, save us from the fires of hell, and lead all souls to Heaven, especially those in most need of Thy mercy.";
+const fatima_prayer_text =
+  "O my Jesus, forgive us our sins, save us from the fires of hell, and lead all souls to Heaven, especially those in most need of Thy mercy.";
 
 const hail_holy_queen = "Hail, Holy Queen";
 const hail_holy_queen_text = `Hail Holy Queen, Mother of mercy,
@@ -88,11 +90,14 @@ const ourFather = prayerRecord(our_father, our_father_text);
 const gloryBe = prayerRecord(glory_be, glory_be_text);
 const fatimaPrayer = prayerRecord(fatima_prayer, fatima_prayer_text);
 const hailHolyQueen = prayerRecord(hail_holy_queen, hail_holy_queen_text);
-const concludingPrayer = prayerRecord(concluding_prayer, concluding_prayer_text);
+const concludingPrayer = prayerRecord(
+  concluding_prayer,
+  concluding_prayer_text,
+);
 const mysteryPrayers = [
   [ourFather],
-  Array.from(Array(10).keys()).map(i => hailMary(i)),
-  [gloryBe, fatimaPrayer]
+  Array.from(Array(10).keys()).map((i) => hailMary(i)),
+  [gloryBe, fatimaPrayer],
 ].flat();
 export const fullRosary: PrayerRecord[][] = [
   [
@@ -102,25 +107,24 @@ export const fullRosary: PrayerRecord[][] = [
     hailMary(0),
     hailMary(1),
     hailMary(2),
-    gloryBe
+    gloryBe,
   ],
   mysteryPrayers,
   mysteryPrayers,
   mysteryPrayers,
   mysteryPrayers,
   mysteryPrayers,
-  [
-    hailHolyQueen,
-    concludingPrayer
-  ]
+  [hailHolyQueen, concludingPrayer],
 ];
-
 
 function hailMary(i: number): PrayerRecord {
   return prayerRecord(`${hail_mary} (${i + 1})`, hail_mary_text);
 }
 
-export function getTotalPrayerIndex(mysteryIndex: number, prayerIndex: number): number {
+export function getTotalPrayerIndex(
+  mysteryIndex: number,
+  prayerIndex: number,
+): number {
   if (mysteryIndex == 0) {
     return prayerIndex;
   } else if (mysteryIndex >= 1 && mysteryIndex <= 5) {

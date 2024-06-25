@@ -4,14 +4,17 @@ import NextMystery from "../interfaces/NextMystery";
 import NextPrayer from "../interfaces/NextPrayer";
 import PreviousMystery from "../interfaces/PreviousMystery";
 import PreviousPrayer from "../interfaces/PreviousPrayer";
+import ReverseDoneButton from "../interfaces/ReverseDoneButton";
 import SetMysteryResponseData from "../interfaces/SetMysteryResponseData";
 
-type Action = ToggleInteractive |
-  HitDoneButton |
-  NextMystery |
-  NextPrayer |
-  SetMysteryResponseData |
-  PreviousMystery |
-  PreviousPrayer;
+type Action =
+  | ToggleInteractive
+  | HitDoneButton
+  | ReverseDoneButton
+  | NextMystery
+  | NextPrayer
+  | SetMysteryResponseData
+  | PreviousMystery
+  | PreviousPrayer;
 
 export default Action;

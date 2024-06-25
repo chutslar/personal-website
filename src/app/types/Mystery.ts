@@ -1,13 +1,17 @@
 import ImageRecord from "./ImageRecord";
-import MysteryName from "./MysteryName"
+import MysteryName from "./MysteryName";
 
 type Mystery = {
   name: MysteryName;
   image: ImageRecord;
   messages: string[];
-}
+};
 
-export function mystery(name: MysteryName, image: ImageRecord, messages: string[]) : Mystery {
+export function mystery(
+  name: MysteryName,
+  image: ImageRecord,
+  messages: string[],
+): Mystery {
   return {
     name,
     image,

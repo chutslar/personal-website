@@ -1,11 +1,14 @@
-import { StaticImageData } from "next/image"
+import { StaticImageData } from "next/image";
 
 type ImageRecord = {
   image: StaticImageData;
   caption: string;
 };
 
-export function imageRecord(image: StaticImageData, caption: string): ImageRecord {
+export function imageRecord(
+  image: StaticImageData,
+  caption: string,
+): ImageRecord {
   return {
     image,
     caption,

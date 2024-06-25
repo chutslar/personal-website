@@ -1,5 +1,5 @@
 "use client";
-import * as React from 'react';
+import * as React from "react";
 import { MainAppBar } from "./MainAppBar";
 import { MainDrawer } from "./MainDrawer";
 
@@ -19,12 +19,18 @@ declare global {
   }
 }
 
-export function Main(props: {children: React.ReactNode}) {
+export function Main(props: { children: React.ReactNode }) {
   const [drawerState, toggleDrawerState] = React.useState(false);
   return (
-    <main className="flex flex-col items-center justify-between p-24" style={{ height: "100%" }}>
+    <main
+      className="flex flex-col items-center justify-between p-24"
+      style={{ height: "100%" }}
+    >
       <MainAppBar toggleDrawerState={toggleDrawerState} />
-      <MainDrawer drawerState={drawerState} toggleDrawerState={toggleDrawerState} />
+      <MainDrawer
+        drawerState={drawerState}
+        toggleDrawerState={toggleDrawerState}
+      />
       {props.children}
     </main>
   );

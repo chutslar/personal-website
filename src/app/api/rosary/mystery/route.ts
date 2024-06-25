@@ -1,20 +1,20 @@
-import type { NextRequest } from 'next/server'
-import { getMysteries } from '../../../utils/RosaryMysteries'
-import type MysteryResponseData from '../../../types/MysteryResponseData'
-import type MysteryCategory from '../../../types/MysteryCategory'
+import type { NextRequest } from "next/server";
+import { getMysteries } from "../../../utils/RosaryMysteries";
+import type MysteryResponseData from "../../../types/MysteryResponseData";
+import type MysteryCategory from "../../../types/MysteryCategory";
 
-export const runtime = 'edge'
+export const runtime = "edge";
 
 export async function GET(request: NextRequest) {
   const categoryString = request.nextUrl.searchParams.get("category");
   if (!categoryString) {
     return new Response("Request missing required param category", {
       status: 400,
-    })
+    });
   }
-  const category = categoryString as MysteryCategory
+  const category = categoryString as MysteryCategory;
   const mysteries = getMysteries(category);
-  const mysteryResponseData : MysteryResponseData = {
+  const mysteryResponseData: MysteryResponseData = {
     category,
     mysteries,
   };

@@ -8,12 +8,9 @@ export const TurnstileWrapper = function TurnstileWrapper() {
     return <></>;
   }
   return (
-    <Box
-      style={{alignSelf: "center"}}
-    >
+    <Box style={{ alignSelf: "center" }}>
       <Script id="cf-turnstile-callback">
         {`window.onloadTurnstileCallback = function () {
-          console.log("onloadTurnstileCallback was called");
           window.turnstile.render('#cf-turnstile', {
             sitekey: "0x4AAAAAAAdCiau-5tjdQjbk",
             callback: function (token) {
@@ -22,15 +19,16 @@ export const TurnstileWrapper = function TurnstileWrapper() {
           });
         }`}
       </Script>
-      <Script 
+      <Script
         src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback"
         async={true}
-        defer={true}/>
+        defer={true}
+      />
       <div
-        style={{alignSelf: "center"}}
+        style={{ alignSelf: "center" }}
         id="cf-turnstile"
         className="checkbox"
       ></div>
     </Box>
-  )
+  );
 };

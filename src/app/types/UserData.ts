@@ -7,6 +7,6 @@ type UserData = {
   pausedSorrowfulMysteryIndex?: number;
   pausedGloriousMysteryIndex?: number;
   pausedLuminousMysteryIndex?: number;
-}
+};
 
 export default UserData;

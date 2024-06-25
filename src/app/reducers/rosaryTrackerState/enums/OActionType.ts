@@ -5,6 +5,7 @@ const OActionType = {
   PreviousPrayer: "PreviousPrayer",
   ToggleInteractive: "ToggleInteractive",
   HitDoneButton: "HitDoneButton",
+  ReverseDoneButton: "ReverseDoneButton",
   SetMysteryResponseData: "SetMysteryResponseData",
 } as const;
 

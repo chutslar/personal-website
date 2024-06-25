@@ -6,11 +6,13 @@ import Action from "./types/Action";
 import { ReadonlyDeep } from "type-fest";
 
 export default function createReducer(): RosaryTrackerStateReducer {
-  const reducer = (state: ReadonlyDeep<RosaryTrackerState>, action: Action): 
-      ReadonlyDeep<RosaryTrackerState> => {
+  const reducer = (
+    state: ReadonlyDeep<RosaryTrackerState>,
+    action: Action,
+  ): ReadonlyDeep<RosaryTrackerState> => {
     switch (action.type) {
       case OActionType.NextMystery: {
-        if (state.mysteryIndex < (fullRosary.length - 1)) {
+        if (state.mysteryIndex < fullRosary.length - 1) {
           return {
             ...state,
             mysteryIndex: state.mysteryIndex + 1,
@@ -34,14 +36,14 @@ export default function createReducer(): RosaryTrackerStateReducer {
         }
       }
       case OActionType.NextPrayer: {
-        if (state.prayerIndex < (fullRosary[state.mysteryIndex].length - 1)) {
+        if (state.prayerIndex < fullRosary[state.mysteryIndex].length - 1) {
           return {
             ...state,
             prayerIndex: state.prayerIndex + 1,
           };
         } else {
           // If this is the final prayer, try to advance to the next mystery
-          return reducer(state, {type: OActionType.NextMystery});
+          return reducer(state, { type: OActionType.NextMystery });
         }
       }
       case OActionType.PreviousPrayer: {
@@ -52,7 +54,7 @@ export default function createReducer(): RosaryTrackerStateReducer {
           };
         } else {
           // If this is the first prayer, try to go back to the previous mystery
-          return reducer(state, {type: OActionType.PreviousMystery});
+          return reducer(state, { type: OActionType.PreviousMystery });
         }
       }
       case OActionType.ToggleInteractive: {
@@ -67,6 +69,12 @@ export default function createReducer(): RosaryTrackerStateReducer {
           hitDoneButton: true,
         };
       }
+      case OActionType.ReverseDoneButton: {
+        return {
+          ...state,
+          hitDoneButton: false,
+        };
+      }
       case OActionType.SetMysteryResponseData: {
         const { mysteryResponseData } = action;
         return {
@@ -79,11 +87,12 @@ export default function createReducer(): RosaryTrackerStateReducer {
       default:
         return state;
     }
-  }
-  return (state: ReadonlyDeep<RosaryTrackerState>, action: Action): 
-  ReadonlyDeep<RosaryTrackerState> => {
+  };
+  return (
+    state: ReadonlyDeep<RosaryTrackerState>,
+    action: Action,
+  ): ReadonlyDeep<RosaryTrackerState> => {
     const newState = reducer(state, action);
-    console.log("New state:", newState);
     return newState;
-  }
+  };
 }

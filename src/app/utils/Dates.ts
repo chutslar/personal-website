@@ -1,6 +1,13 @@
-import { differenceInDays, isAfter, isBefore, isEqual, previousSunday, subWeeks } from "date-fns";
+import {
+  differenceInDays,
+  isAfter,
+  isBefore,
+  isEqual,
+  previousSunday,
+  subWeeks,
+} from "date-fns";
 
-const easterDatesMap = new Map()
+const easterDatesMap = new Map();
 easterDatesMap.set(2024, [3, 31]);
 easterDatesMap.set(2025, [4, 20]);
 easterDatesMap.set(2026, [4, 5]);
@@ -79,38 +86,39 @@ easterDatesMap.set(2098, [4, 20]);
 easterDatesMap.set(2099, [4, 12]);
 
 export function isEaster(date: Date): Boolean {
-    const monthDay = easterDatesMap.get(date.getFullYear());
-    if (monthDay != null) {
-        return monthDay.first == date.getMonth() &&
-                monthDay.second == date.getDate();
-    }
-    return false;
+  const monthDay = easterDatesMap.get(date.getFullYear());
+  if (monthDay != null) {
+    return (
+      monthDay.first == date.getMonth() && monthDay.second == date.getDate()
+    );
+  }
+  return false;
 }
 
 export function isLent(date: Date): Boolean {
-    const easterDate = easterForYear(date.getFullYear());
-    if (easterDate) {
-        const daysUntilEaster = differenceInDays(date, easterDate)
-        return daysUntilEaster >= 4 && daysUntilEaster <= 46;
-    }
-    return false;
+  const easterDate = easterForYear(date.getFullYear());
+  if (easterDate) {
+    const daysUntilEaster = differenceInDays(date, easterDate);
+    return daysUntilEaster >= 4 && daysUntilEaster <= 46;
+  }
+  return false;
 }
 
 export function isAdvent(date: Date): Boolean {
-    const christmasDate = new Date(date.getFullYear(), 12, 25)
-    if (isEqual(date, christmasDate)) {
-        return true;
-    }
-    const sundayBeforeChristmas = previousSunday(christmasDate);
-    const adventStart = subWeeks(sundayBeforeChristmas, 3);
-    return isAfter(date, adventStart) && isBefore(date, christmasDate);
+  const christmasDate = new Date(date.getFullYear(), 12, 25);
+  if (isEqual(date, christmasDate)) {
+    return true;
+  }
+  const sundayBeforeChristmas = previousSunday(christmasDate);
+  const adventStart = subWeeks(sundayBeforeChristmas, 3);
+  return isAfter(date, adventStart) && isBefore(date, christmasDate);
 }
 
 export function easterForYear(year: number): Date | undefined {
-    const monthDay = easterDatesMap.get(year);
-    if (monthDay) {
-        const date = new Date(year, monthDay.first, monthDay.second);
-        return date;
-    }
-    return undefined;
+  const monthDay = easterDatesMap.get(year);
+  if (monthDay) {
+    const date = new Date(year, monthDay.first, monthDay.second);
+    return date;
+  }
+  return undefined;
 }
