@@ -1,14 +1,17 @@
 "use client";
 import { Box, Button, Typography } from "@mui/material";
 import { setCookie } from "cookies-next";
-import type { RequestCookie, ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { useCallback, useMemo, useState } from "react";
+import { SafeTurnstileWrapper } from "./SafeTurnstileWrapper";
+import { useMounted } from "../hooks/useMounted";
+import { makeLoginRequest } from "./utils/makeApiRequests";
 
 const userNameRegex = /[\w\-]+/
 
 export default function LoginScreen(props: {
   setLoggedInUserName: (userName: string) => void,
 }) {
+  const mounted = useMounted();
   // The username that the user inputs.
   const [userName, setUserName] = useState("");
   // True if the Cloudflare Turnstile returned a success, false otherwise.
@@ -20,6 +23,8 @@ export default function LoginScreen(props: {
   const userNameError = useMemo(() => {
     if (userName.length == 0) {
       return "Must enter username";
+    } else if (userName.length < 8) {
+      return "Username must be at least 8 characters";
     } else if (userName.length >= 40) {
       return "Username must be fewer than 40 characters";
     } else {
@@ -42,9 +47,9 @@ export default function LoginScreen(props: {
   };
 
   // Attach the callback to the window object so that it can be called from the Cloudflare widget.
-  // NOTE: this causes a 500 error but ultimately renders correctly. Other options that get rid of the 500
-  // cause hydration to fail, and the turnstile is not rendered.
-  (window as any).turnstileCallback = turnstileCallback;
+  if (mounted) {
+    window.turnstileCallback = turnstileCallback;
+  }
 
   // Set the userName cookie so that it can be referenced in other parts of the webapp.
   const setUserNameCookie = useCallback((userName: string) => {
@@ -55,22 +60,15 @@ export default function LoginScreen(props: {
   // Send the login request to the server.
   const submitLogin = useCallback(() => {
     const login = async () => {
-      const result = await fetch(`/api/login?user=${userName}`, {
-        method: "POST",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({token: turnstileToken}),
-      });
-      if (result.status == 200) {
-        setUserNameCookie(userName);
-      } else if (result.status == 404) {
-        setLoginError("No user with that username exists. Would you like to refresh and create that account instead?");
-      } else {
-        setLoginError("Failed to login, please refresh.");
+      if (turnstileToken) {
+        const result = await makeLoginRequest(userName, turnstileToken);
+        if (result.status == 200) {
+          setUserNameCookie(userName);
+        } else if (result.status == 404) {
+          setLoginError("No user with that username exists. Would you like to refresh and create that account instead?");
+        } else {
+          setLoginError("Failed to login, please refresh.");
+        }
       }
     }
     login();
@@ -100,7 +98,7 @@ export default function LoginScreen(props: {
     }
     createUser();
   }, [userName, turnstileToken, setUserNameCookie]);
-  
+
   return (
     <Box sx={{
       width: "400px",
@@ -118,7 +116,7 @@ export default function LoginScreen(props: {
         <input className="border border-gray-800" type="text" value={userName} onChange={e => setUserName(e.target.value)} />
       </Box>
       <Typography textAlign="center" color="red" variant="body1">{userNameError}</Typography>
-      <div style={{alignSelf: "center"}} className="cf-turnstile" data-theme="light" data-sitekey="0x4AAAAAAAdCiau-5tjdQjbk" data-callback="turnstileCallback"></div>
+      <SafeTurnstileWrapper />
       <Box sx={{
         display: "flex",
         flexDirection: "row",

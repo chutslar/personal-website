@@ -1,16 +1,26 @@
 "use client";
 
 import { Box, Divider, Link, Typography } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoginScreen from "./LoginScreen";
 import { deleteCookie, getCookie } from "cookies-next";
+import { useMounted } from "../hooks/useMounted";
 
 export default function AccountPage() {
-  const [loggedInUserName, setLoggedInUserName] = useState(getCookie("userName") || "");
+  const mounted = useMounted();
+  const [loggedInUserName, setLoggedInUserName] = useState("");
   const logout = () => {
     deleteCookie("userName");
     setLoggedInUserName("");
   }
+  useEffect(() => {
+    if (mounted) {
+      const userNameCookie = getCookie("userName");
+      if (userNameCookie) {
+        setLoggedInUserName(userNameCookie);
+      }
+    }
+  }, [mounted]);
   return (
     <Box maxWidth="700px">
       <Typography variant="h4" align="center">
@@ -21,7 +31,11 @@ export default function AccountPage() {
         paddingTop: "16px",
       }}>
         {loggedInUserName &&
-          <Box>
+          <Box sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}>
             <Typography variant="body1">Username: {loggedInUserName}</Typography>
             <Link component="button" variant="body1" onClick={logout}>Sign out</Link>
           </Box>
