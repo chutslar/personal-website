@@ -12,6 +12,7 @@ export const TurnstileWrapper = function TurnstileWrapper() {
       <Script id="cf-turnstile-callback">
         {`window.onloadTurnstileCallback = function () {
           window.turnstile.render('#cf-turnstile', {
+            theme: "light",
             sitekey: "0x4AAAAAAAdCiau-5tjdQjbk",
             callback: function (token) {
               window.turnstileCallback(token);

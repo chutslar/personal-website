@@ -114,11 +114,17 @@ export default function LoginScreen(props: {
   return (
     <Box
       sx={{
-        width: "400px",
+        height: "min(100%, 400px)",
+        maxWidth: "400px",
         display: "flex",
         flexDirection: "column",
+        justifyContent: "space-around",
+        textAlign: "center",
       }}
     >
+      <Typography variant="h6">
+        {"If you're new, pick a username and create your account 🙂"}
+      </Typography>
       <Box
         sx={{
           display: "flex",
@@ -128,7 +134,9 @@ export default function LoginScreen(props: {
           padding: "8px",
         }}
       >
-        <Typography variant="body1">Username:</Typography>
+        <Typography style={{ paddingRight: "6px" }} variant="body1">
+          Username:
+        </Typography>
         <input
           className="border border-gray-800"
           type="text"
@@ -153,11 +161,14 @@ export default function LoginScreen(props: {
           <Typography variant="body1">Log In</Typography>
         </Button>
         <Button disabled={buttonsDisabled} onClick={submitCreateUser}>
-          <Typography variant="body1">Create User</Typography>
+          <Typography variant="body1">Create Account</Typography>
         </Button>
       </Box>
       <Typography textAlign="center" color="red" variant="body1">
         {loginError}
+      </Typography>
+      <Typography variant="body1">
+        {"Don't forget your username! Maybe write it down somewhere 😅"}
       </Typography>
     </Box>
   );

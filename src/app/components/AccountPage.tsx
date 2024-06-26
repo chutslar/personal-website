@@ -22,13 +22,19 @@ export default function AccountPage() {
     }
   }, [mounted]);
   return (
-    <Box maxWidth="700px">
+    <Box
+      sx={{
+        maxWidth: "700px",
+        height: "100%",
+      }}
+    >
       <Typography variant="h4" align="center">
-        Your Data
+        {loggedInUserName ? "Your Data" : "Sign In"}
       </Typography>
       <Divider />
       <Box
         sx={{
+          height: "100%",
           paddingTop: "16px",
         }}
       >
