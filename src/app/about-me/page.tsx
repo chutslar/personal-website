@@ -18,7 +18,7 @@ export default function AboutMe() {
         <AboutMeItem snippet="I am a software engineer who works from home, currently living in Indiana." />
         <AboutMeItem snippet="At work I mostly use Java, but I also sometimes use Typescript with React - this website is made with Next.js using Cloudflare Pages." />
         <AboutMeItem
-          snippet={`I have a cute cat named Nico who is ${dayjs.utc().diff(dayjs.utc("2021-04-03T12:00:00.000Z"))} years old.`}
+          snippet={`I have a cute cat named Nico who is ${dayjs.utc().diff(dayjs.utc("2021-04-03T12:00:00.000Z"), "years")} years old.`}
         />
         <Image src={Nico} alt="Nico" priority={true} />
         <AboutMeItem snippet="I have a wonderful girlfriend named Lucerito who is the love of my life 💕" />
