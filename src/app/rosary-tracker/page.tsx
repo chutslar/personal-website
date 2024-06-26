@@ -10,6 +10,7 @@ import {
   DialogTitle,
   Divider,
   IconButton,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { Main } from "../components/Main";
@@ -23,7 +24,13 @@ import OActionType from "../reducers/rosaryTrackerState/enums/OActionType";
 import type Mystery from "../types/Mystery";
 import Image from "next/image";
 import { fullRosary } from "../utils/Prayers";
-import { ChevronLeftSharp, ChevronRightSharp, Info } from "@mui/icons-material";
+import {
+  Check,
+  ChevronLeftSharp,
+  ChevronRightSharp,
+  Info,
+  MenuBook,
+} from "@mui/icons-material";
 import { getMysteryCategory } from "../utils/RosaryMysteries";
 import Row from "../components/Row";
 import { Chivo_Mono } from "next/font/google";
@@ -138,7 +145,7 @@ export default function RosaryTracker() {
 
   return (
     <Main>
-      <Box textAlign="center" sx={{ height: "100%" }}>
+      <Box textAlign="center" sx={{ height: "100%", minWidth: "240px" }}>
         <Typography variant="h5">Rosary Tracker</Typography>
         <Divider />
         {state.mysteryResponseData && currentMystery && (
@@ -178,7 +185,7 @@ export default function RosaryTracker() {
                 sx={{
                   display: "flex",
                   flexDirection: "row",
-                  width: "400px",
+                  maxWidth: "400px",
                   justifyContent: "space-between",
                   alignSelf: "center",
                 }}
@@ -281,29 +288,29 @@ export default function RosaryTracker() {
               </Typography>
             </Card>
             <Row sx={{ justifyContent: "space-around" }}>
-              <Button
-                sx={{ background: "var(--primary-color)", color: "white" }}
-                onClick={() =>
-                  dispatch({ type: OActionType.ToggleInteractive })
-                }
-              >
-                <Typography variant="button">
-                  {state.isInteractive
-                    ? "Turn Walkthrough Off"
-                    : "Walk Me Through It"}
-                </Typography>
-              </Button>
-              <Button
-                sx={{ background: "var(--primary-color)", color: "white" }}
-                disabled={
-                  state.hitDoneButton ||
-                  !isLastMystery(state) ||
-                  (state.isInteractive && !isLastPrayer(state))
-                }
-                onClick={onDone}
-              >
-                <Typography variant="button">Done</Typography>
-              </Button>
+              <Tooltip title="Prayer Guide">
+                <IconButton
+                  sx={{ color: "var(--primary-color)", paddingRight: "4px" }}
+                  onClick={() =>
+                    dispatch({ type: OActionType.ToggleInteractive })
+                  }
+                >
+                  <MenuBook />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Done">
+                <IconButton
+                  sx={{ color: "var(--primary-color)", paddingLeft: "4px" }}
+                  disabled={
+                    state.hitDoneButton ||
+                    !isLastMystery(state) ||
+                    (state.isInteractive && !isLastPrayer(state))
+                  }
+                  onClick={onDone}
+                >
+                  <Check />
+                </IconButton>
+              </Tooltip>
             </Row>
           </Box>
         )}
