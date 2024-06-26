@@ -3,38 +3,46 @@ import OMysteryName from "../enums/OMysteryName";
 import { imageRecord } from "../types/ImageRecord";
 import Mystery, { mystery } from "../types/Mystery";
 import MysteryCategory from "../types/MysteryCategory";
-import { isAdvent, isLent } from "./Dates";
+import { isAdvent, isLent, startOfDay } from "./Dates";
 import * as Assets from "../assets/index";
-import { format } from "date-fns";
+import dayjs from "dayjs";
 
 export function getMysteryCategory(date: Date): MysteryCategory {
-  switch (format(date, "iiii")) {
-    case "Monday": {
-      return OMysteryCategory.Joyful;
-    }
-    case "Saturday": {
-      return OMysteryCategory.Joyful;
-    }
-    case "Tuesday": {
-      return OMysteryCategory.Sorrowful;
-    }
-    case "Friday": {
-      return OMysteryCategory.Sorrowful;
-    }
-    case "Wednesday": {
-      return OMysteryCategory.Glorious;
-    }
-    case "Thursday": {
-      return OMysteryCategory.Luminous;
-    }
-    case "Sunday": {
-      if (isAdvent(date)) {
+  switch (dayjs(date).day()) {
+    // Sunday
+    case 0: {
+      const dayStart = startOfDay(date);
+      if (isAdvent(dayStart)) {
         return OMysteryCategory.Joyful;
       }
-      if (isLent(date)) {
+      if (isLent(dayStart)) {
         return OMysteryCategory.Sorrowful;
       }
       return OMysteryCategory.Glorious;
+    }
+    // Monday
+    case 1: {
+      return OMysteryCategory.Joyful;
+    }
+    // Tuesday
+    case 2: {
+      return OMysteryCategory.Sorrowful;
+    }
+    // Wednesday
+    case 3: {
+      return OMysteryCategory.Glorious;
+    }
+    // Thursday
+    case 4: {
+      return OMysteryCategory.Luminous;
+    }
+    // Friday
+    case 5: {
+      return OMysteryCategory.Sorrowful;
+    }
+    // Saturday
+    case 6: {
+      return OMysteryCategory.Joyful;
     }
     // Should never happen:
     default: {

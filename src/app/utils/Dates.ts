@@ -1,11 +1,5 @@
-import {
-  differenceInDays,
-  isAfter,
-  isBefore,
-  isEqual,
-  previousSunday,
-  subWeeks,
-} from "date-fns";
+import dayjs from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 
 const easterDatesMap = new Map();
 easterDatesMap.set(2024, [3, 31]);
@@ -85,40 +79,55 @@ easterDatesMap.set(2097, [3, 31]);
 easterDatesMap.set(2098, [4, 20]);
 easterDatesMap.set(2099, [4, 12]);
 
-export function isEaster(date: Date): Boolean {
-  const monthDay = easterDatesMap.get(date.getFullYear());
+dayjs.extend(isSameOrAfter);
+
+export function isEaster(date: dayjs.Dayjs): Boolean {
+  const monthDay = easterDatesMap.get(date.year());
   if (monthDay != null) {
-    return (
-      monthDay.first == date.getMonth() && monthDay.second == date.getDate()
-    );
+    return monthDay.first == date.month() && monthDay.second == date.date();
   }
   return false;
 }
 
-export function isLent(date: Date): Boolean {
-  const easterDate = easterForYear(date.getFullYear());
+export function isLent(date: dayjs.Dayjs): Boolean {
+  const easterDate = easterForYear(date.year());
   if (easterDate) {
-    const daysUntilEaster = differenceInDays(date, easterDate);
+    const daysUntilEaster = dayjs(date).diff(easterDate, "days");
     return daysUntilEaster >= 4 && daysUntilEaster <= 46;
   }
   return false;
 }
 
-export function isAdvent(date: Date): Boolean {
-  const christmasDate = new Date(date.getFullYear(), 12, 25);
-  if (isEqual(date, christmasDate)) {
+export function isAdvent(date: dayjs.Dayjs): Boolean {
+  const christmasDate = dayjs()
+    .year(date.year())
+    .month(12)
+    .date(25)
+    .startOf("day");
+  if (date.isSame(christmasDate, "day")) {
     return true;
   }
-  const sundayBeforeChristmas = previousSunday(christmasDate);
-  const adventStart = subWeeks(sundayBeforeChristmas, 3);
-  return isAfter(date, adventStart) && isBefore(date, christmasDate);
+  const sundayBeforeChristmas =
+    christmasDate.day() == 0
+      ? christmasDate.subtract(1, "week")
+      : christmasDate.day(0);
+  const adventStart = sundayBeforeChristmas.subtract(3, "weeks");
+  return date.isSameOrAfter(adventStart) && date.isBefore(christmasDate);
 }
 
-export function easterForYear(year: number): Date | undefined {
+export function easterForYear(year: number): dayjs.Dayjs | undefined {
   const monthDay = easterDatesMap.get(year);
   if (monthDay) {
-    const date = new Date(year, monthDay.first, monthDay.second);
+    const date = dayjs()
+      .year(year)
+      .month(monthDay.first)
+      .date(monthDay.second)
+      .startOf("day");
     return date;
   }
   return undefined;
+}
+
+export function startOfDay(date: Date): dayjs.Dayjs {
+  return dayjs(date).startOf("day");
 }
