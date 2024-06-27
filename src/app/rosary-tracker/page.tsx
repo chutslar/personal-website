@@ -39,6 +39,9 @@ import { useMounted } from "../hooks/useMounted";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 const chivo = Chivo_Mono({ subsets: ["latin"] });
 
