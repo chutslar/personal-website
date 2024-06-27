@@ -11,6 +11,7 @@ import {
 } from "../../../database/databaseMethods";
 import UserData from "../../../types/UserData";
 import OMysteryCategory from "../../../enums/OMysteryCategory";
+import { verifyLoginJWT } from "../../../utils/jwtUtils";
 
 export const runtime = "edge";
 
@@ -18,11 +19,22 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export async function POST(request: NextRequest) {
-  const userName = request.nextUrl.searchParams.get("user");
+  const accessToken = request.cookies.get("access-token");
+  if (!accessToken?.value) {
+    return new Response("Missing access token cookie", { status: 401 });
+  }
+  const userName = await verifyLoginJWT(
+    getRequestContext().env.JWT_SECRETKEY,
+    accessToken.value,
+  );
+  if (!userName) {
+    return new Response("Invalid access token cookie", { status: 401 });
+  }
+
   const timestamp = request.nextUrl.searchParams.get("ts");
   const timezone = request.nextUrl.searchParams.get("tz");
   const category = request.nextUrl.searchParams.get("category");
-  if (!userName || !timestamp || !timezone) {
+  if (!timestamp || !timezone) {
     return new Response("Request missing required param", {
       status: 400,
     });

@@ -1,14 +1,45 @@
 "use client";
 
-import { Box, Divider, Link, Typography } from "@mui/material";
+import {
+  Box,
+  Divider,
+  Link,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
-import LoginScreen from "./LoginScreen";
 import { deleteCookie, getCookie } from "cookies-next";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import tz from "dayjs/plugin/timezone";
+
+import LoginScreen from "./LoginScreen";
 import { useMounted } from "../hooks/useMounted";
+import { makeUserDataRequest } from "./utils/makeApiRequests";
+import UserData from "../types/UserData";
+
+dayjs.extend(utc);
+dayjs.extend(tz);
+
+const DATE_DISPLAY_FORMAT = "MMMM D, YYYY h:mm A";
+
+function renderDateString(dateString?: string): string {
+  if (!dateString) {
+    return "N/A";
+  }
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return dayjs.utc(dateString).tz(timeZone).format(DATE_DISPLAY_FORMAT);
+}
 
 export default function AccountPage() {
   const mounted = useMounted();
   const [loggedInUserName, setLoggedInUserName] = useState("");
+  const [userData, setUserData] = useState<UserData | undefined>(undefined);
   const logout = () => {
     deleteCookie("userName");
     setLoggedInUserName("");
@@ -18,6 +49,13 @@ export default function AccountPage() {
       const userNameCookie = getCookie("userName");
       if (userNameCookie) {
         setLoggedInUserName(userNameCookie);
+        const requestUserData = async () => {
+          const response = await makeUserDataRequest();
+          if (response.status == 200) {
+            setUserData(await response.json());
+          }
+        };
+        requestUserData();
       }
     }
   }, [mounted]);
@@ -49,6 +87,34 @@ export default function AccountPage() {
             <Typography variant="body1">
               Username: {loggedInUserName}
             </Typography>
+            {userData && (
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: "300px" }}>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell>First Rosary</TableCell>
+                      <TableCell>
+                        {renderDateString(userData.firstRosaryDate)}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Most Recent Rosary</TableCell>
+                      <TableCell>
+                        {renderDateString(userData.lastRosaryDate)}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Total Rosaries Completed</TableCell>
+                      <TableCell>{userData.totalRosaries || 0}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Current Rosary Streak</TableCell>
+                      <TableCell>{userData.totalRosaries || 0}</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
             <Link component="button" variant="body1" onClick={logout}>
               Sign out
             </Link>

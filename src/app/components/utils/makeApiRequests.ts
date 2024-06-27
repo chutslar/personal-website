@@ -1,10 +1,11 @@
+import { encode } from "js-base64";
 import type MysteryCategory from "../../types/MysteryCategory";
 
 export async function makeLoginRequest(
-  userName: string,
-  token: string,
+  user: string,
+  password: string,
 ): Promise<Response> {
-  return await fetch(`/api/login?user=${userName}`, {
+  return await fetch("/api/login", {
     method: "POST",
     mode: "cors",
     cache: "no-cache",
@@ -12,15 +13,16 @@ export async function makeLoginRequest(
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ token }),
+    body: JSON.stringify({ user, password: encode(password) }),
   });
 }
 
 export async function makeCreateUserRequest(
-  userName: string,
+  user: string,
+  password: string,
   token: string,
 ): Promise<Response> {
-  return await fetch(`/api/createUser?user=${userName}`, {
+  return await fetch("/api/createUser", {
     method: "POST",
     mode: "cors",
     cache: "no-cache",
@@ -28,18 +30,17 @@ export async function makeCreateUserRequest(
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ token }),
+    body: JSON.stringify({ user, password: encode(password), token }),
   });
 }
 
 export async function makeRosaryCompletedRequest(
-  userName: string,
   timestamp: string,
   timezone: string,
   category: MysteryCategory,
 ): Promise<Response> {
   return await fetch(
-    `/api/rosary/completed?user=${userName}&ts=${timestamp}&tz=${timezone}&category=${category}`,
+    `/api/rosary/completed?&ts=${timestamp}&tz=${timezone}&category=${category}`,
     {
       method: "POST",
       mode: "cors",
@@ -47,4 +48,8 @@ export async function makeRosaryCompletedRequest(
       credentials: "same-origin",
     },
   );
+}
+
+export async function makeUserDataRequest(): Promise<Response> {
+  return await fetch("/api/userData");
 }

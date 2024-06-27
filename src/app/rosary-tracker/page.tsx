@@ -123,9 +123,8 @@ export default function RosaryTracker() {
     const submitDone = async () => {
       if (userName && state.mysteryResponseData) {
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const timestamp = new Date().toISOString();
+        const timestamp = dayjs.utc().toISOString();
         const response = await makeRosaryCompletedRequest(
-          userName,
           timestamp,
           timeZone,
           state.mysteryResponseData.category,
@@ -299,17 +298,19 @@ export default function RosaryTracker() {
                 </IconButton>
               </Tooltip>
               <Tooltip title="Done">
-                <IconButton
-                  sx={{ color: "var(--primary-color)", paddingLeft: "4px" }}
-                  disabled={
-                    state.hitDoneButton ||
-                    !isLastMystery(state) ||
-                    (state.isInteractive && !isLastPrayer(state))
-                  }
-                  onClick={onDone}
-                >
-                  <Check />
-                </IconButton>
+                <span>
+                  <IconButton
+                    sx={{ color: "var(--primary-color)", paddingLeft: "4px" }}
+                    disabled={
+                      state.hitDoneButton ||
+                      !isLastMystery(state) ||
+                      (state.isInteractive && !isLastPrayer(state))
+                    }
+                    onClick={onDone}
+                  >
+                    <Check />
+                  </IconButton>
+                </span>
               </Tooltip>
             </Row>
           </Box>

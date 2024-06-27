@@ -1,4 +1,7 @@
-import UserData from "../types/UserData";
+"use server";
+
+import type UserData from "../types/UserData";
+import { hashPassword, verifyPassword } from "../utils/hashing";
 
 /**
  * @param db The D1 database
@@ -19,17 +22,45 @@ export async function getUserExists(
 /**
  * @param db The D1 database
  * @param userName The username
+ * @param passwordAttempt The plaintext password - it will be salted and hashed in this method
+ * @return True if the operation succeeded, false otherwise.
+ */
+export async function login(
+  db: D1Database,
+  userName: string,
+  passwordAttempt: string,
+): Promise<boolean> {
+  if (!passwordAttempt?.length) {
+    return false;
+  }
+  const { results } = await db
+    .prepare("SELECT passwordHash FROM Users WHERE username = ? LIMIT 1")
+    .bind(userName)
+    .all();
+  const storedHash: string = results[0].passwordHash as string;
+  return await verifyPassword(storedHash, passwordAttempt);
+}
+
+/**
+ * @param db The D1 database
+ * @param userName The username
+ * @param password The plaintext password - it will be salted and hashed in this method
  * @returns True if the operation succeeded, false otherwise
  */
 export async function createUser(
   db: D1Database,
   userName: string,
+  password: string,
 ): Promise<boolean> {
+  if (!password?.length) {
+    return false;
+  }
+  const passwordHash = await hashPassword(password);
   const { success } = await db
     .prepare(
-      "INSERT INTO Users (userName) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM Users WHERE userName = ? LIMIT 1)",
+      "INSERT INTO Users (userName, passwordHash) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM Users WHERE userName = ? LIMIT 1)",
     )
-    .bind(userName, userName)
+    .bind(userName, passwordHash, userName)
     .run();
   return success;
 }

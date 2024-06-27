@@ -11,9 +11,9 @@ export type TurnstileResponse = {
 
 export default async function verifyTurnstileToken(
   request: NextRequest,
+  token: string,
 ): Promise<TurnstileResponse> {
   const turnstileSecretKey = getRequestContext().env.TURNSTILE_SECRETKEY;
-
   if (!turnstileSecretKey) {
     return {
       internalError: 500,
@@ -21,7 +21,6 @@ export default async function verifyTurnstileToken(
   }
 
   // Turnstile injects a token in "cf-turnstile-response".
-  const { token } = (await request.json()) as any;
   const forwarded = request.headers.get("x-forwarded-for");
   const ip = forwarded ? forwarded.split(/, /)[0] : request.ip;
 

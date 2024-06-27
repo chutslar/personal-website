@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS Users;
 CREATE TABLE IF NOT EXISTS Users (
     userId INTEGER PRIMARY KEY AUTOINCREMENT, 
     userName TEXT NOT NULL,
+    passwordHash TEXT NOT NULL,
     firstRosaryDate TEXT,
     lastRosaryDate TEXT,
     totalRosaries INTEGER,
