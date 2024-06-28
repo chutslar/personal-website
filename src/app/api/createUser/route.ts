@@ -1,41 +1,48 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { getRequestContext } from "@cloudflare/next-on-pages";
-import verifyTurnstileToken from "../turnstile-verify/verifyTurnstileToken";
 import { decode } from "js-base64";
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
 
 import { createUser, getUserExists } from "../../database/databaseMethods";
-import { createLoginJWT } from "../../utils/jwtUtils";
+import { createLoginJWT, verifyTurnstileJWT } from "../../utils/jwtUtils";
 
 export const runtime = "edge";
+
+dayjs.extend(duration);
 
 type CreateUserParameters = {
   user: string;
   password: string;
-  token: string;
 };
 
 export async function POST(request: NextRequest) {
+  const turnstileToken = request.cookies.get("turnstile-token");
+  if (!turnstileToken?.value) {
+    return new Response("Missing access token cookie", { status: 401 });
+  }
+  const passedTurnstile = await verifyTurnstileJWT(
+    getRequestContext().env.JWT_SECRETKEY,
+    turnstileToken.value,
+  );
+  if (!passedTurnstile) {
+    return new Response("Missing turnstile verification token", {
+      status: 401,
+    });
+  }
+
   const createUserParameters: CreateUserParameters = await request.json();
   if (!createUserParameters) {
     return new Response("Missing required json fields", {
       status: 400,
     });
   }
-  const { user, password, token } = createUserParameters;
-  if (!user || !password || !token) {
+  const { user, password } = createUserParameters;
+  if (!user || !password) {
     return new Response("Missing required json field(s)", {
       status: 400,
     });
-  }
-  const outcome = await verifyTurnstileToken(request, token);
-  if (!outcome.success) {
-    return new Response(
-      `Failed turnstile verification: ${JSON.stringify(outcome)}`,
-      {
-        status: 401,
-      },
-    );
   }
 
   const db = getRequestContext().env.DB;
@@ -54,7 +61,9 @@ export async function POST(request: NextRequest) {
       user,
     );
     if (accessToken) {
-      cookies().set("access-token", accessToken);
+      cookies().set("access-token", accessToken, {
+        maxAge: dayjs.duration({ days: 1 }).asSeconds(),
+      });
       const response = new NextResponse("", { status: 200 });
       response.cookies.set("access-token", accessToken);
       return response;

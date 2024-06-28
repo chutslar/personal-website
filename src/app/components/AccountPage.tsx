@@ -39,19 +39,20 @@ function renderDateString(dateString?: string): string {
 export default function AccountPage() {
   const mounted = useMounted();
   const [loggedInUserName, setLoggedInUserName] = useState("");
+  const [rememberedUserName, setRememberedUserName] = useState("");
   const [userData, setUserData] = useState<UserData | undefined>(undefined);
   const logout = () => {
-    deleteCookie("userName");
     setLoggedInUserName("");
   };
   useEffect(() => {
     if (mounted) {
       const userNameCookie = getCookie("userName");
       if (userNameCookie) {
-        setLoggedInUserName(userNameCookie);
+        setRememberedUserName(userNameCookie);
         const requestUserData = async () => {
           const response = await makeUserDataRequest();
           if (response.status == 200) {
+            setLoggedInUserName(userNameCookie);
             setUserData(await response.json());
           }
         };
@@ -121,7 +122,10 @@ export default function AccountPage() {
           </Box>
         )}
         {!loggedInUserName && (
-          <LoginScreen setLoggedInUserName={setLoggedInUserName} />
+          <LoginScreen
+            rememberedUserName={rememberedUserName}
+            setLoggedInUserName={setLoggedInUserName}
+          />
         )}
       </Box>
     </Box>

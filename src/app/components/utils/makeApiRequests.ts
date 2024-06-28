@@ -20,7 +20,6 @@ export async function makeLoginRequest(
 export async function makeCreateUserRequest(
   user: string,
   password: string,
-  token: string,
 ): Promise<Response> {
   return await fetch("/api/createUser", {
     method: "POST",
@@ -30,7 +29,22 @@ export async function makeCreateUserRequest(
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ user, password: encode(password), token }),
+    body: JSON.stringify({ user, password: encode(password) }),
+  });
+}
+
+export async function makeTurnstileVerifyRequest(
+  token: string,
+): Promise<Response> {
+  return await fetch("/api/turnstile-verify", {
+    method: "POST",
+    mode: "cors",
+    cache: "no-cache",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ token }),
   });
 }
 

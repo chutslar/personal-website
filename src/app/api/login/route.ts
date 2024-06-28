@@ -2,12 +2,16 @@ import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { getRequestContext } from "@cloudflare/next-on-pages";
 import { decode } from "js-base64";
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
 
 import { getUserExists, login } from "../../database/databaseMethods";
 import LoginParameters from "../../types/LoginParameters";
 import { createLoginJWT } from "../../utils/jwtUtils";
 
 export const runtime = "edge";
+
+dayjs.extend(duration);
 
 export async function POST(request: NextRequest) {
   const loginParameters: LoginParameters = await request.json();
@@ -38,7 +42,9 @@ export async function POST(request: NextRequest) {
       user,
     );
     if (accessToken) {
-      cookies().set("access-token", accessToken);
+      cookies().set("access-token", accessToken, {
+        maxAge: dayjs.duration({ days: 1 }).asSeconds(),
+      });
       const response = new NextResponse("", { status: 200 });
       response.cookies.set("access-token", accessToken);
       return response;

@@ -1,33 +1,36 @@
 "use client";
 import { Box, Button, Link, TextField, Typography } from "@mui/material";
-import { setCookie } from "cookies-next";
-import { useCallback, useMemo, useState } from "react";
+import { getCookie, setCookie } from "cookies-next";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { SafeTurnstileWrapper } from "./SafeTurnstileWrapper";
 import { useMounted } from "../hooks/useMounted";
 import {
   makeCreateUserRequest,
   makeLoginRequest,
+  makeTurnstileVerifyRequest,
 } from "./utils/makeApiRequests";
 import Row from "./Row";
 
-const userNameRegex = /[\w\-_]+/;
-const passwordRegex = /[\w\-_!@#$%^&*]+/;
+const userNameRegex = /^[a-zA-Z\d\-_]+$/;
+const passwordRegex = /^[a-zA-Z\d\-_!@#$%^&*]+$/;
 
 export default function LoginScreen(props: {
+  rememberedUserName: string;
   setLoggedInUserName: (userName: string) => void;
 }) {
   const mounted = useMounted();
   // The username that the user inputs.
   const [userName, setUserName] = useState("");
+  // The password that the user inputs.
   const [password, setPassword] = useState("");
   // True if the Cloudflare Turnstile returned a success, false otherwise.
   const [passedTurnstile, setPassedTurnstile] = useState(false);
-  // The token returned from Cloudflare Turnstile, used to verify that the user is not
-  // a bot when logging in or creating an account.
-  const [turnstileToken, setTurnstileToken] = useState<string | undefined>(
-    undefined,
-  );
-  const [submitIsCreate, setSubmitIsCreate] = useState(true);
+  // True if the user started entering a username.
+  const [touchedUsername, setTouchedUsername] = useState(false);
+  // True if the user started entering a password.
+  const [touchedPassword, setTouchedPassword] = useState(false);
+  // True if the user is trying to create an account.
+  const [submitIsCreate, setSubmitIsCreate] = useState(false);
   // The error message shown to the user when the userName input is not valid.
   const userNameError = useMemo(() => {
     if (userName.length == 0) {
@@ -44,6 +47,7 @@ export default function LoginScreen(props: {
       return "";
     }
   }, [userName]);
+  // The error message shown to the user when the password input is not valid.
   const passwordError = useMemo(() => {
     if (password.length == 0) {
       return "Please enter your password";
@@ -72,8 +76,13 @@ export default function LoginScreen(props: {
 
   // A callback to verify on the server that the Turnstile succeeded.
   const turnstileCallback = (token: string) => {
-    setPassedTurnstile(true);
-    setTurnstileToken(token);
+    const submitTurnstileVerify = async () => {
+      const response = await makeTurnstileVerifyRequest(token);
+      if (response.status == 200) {
+        setPassedTurnstile(true);
+      }
+    };
+    submitTurnstileVerify();
   };
 
   // Attach the callback to the window object so that it can be called from the Cloudflare widget.
@@ -115,15 +124,11 @@ export default function LoginScreen(props: {
   const submitCreateUser = useCallback(() => {
     const createUser = async () => {
       if (
-        turnstileToken &&
+        passedTurnstile &&
         userNameError.length == 0 &&
         passwordError.length == 0
       ) {
-        const result = await makeCreateUserRequest(
-          userName,
-          password,
-          turnstileToken,
-        );
+        const result = await makeCreateUserRequest(userName, password);
         if (result.status == 200) {
           setUserNameCookie(userName);
           return;
@@ -146,10 +151,11 @@ export default function LoginScreen(props: {
     userNameError,
     password,
     passwordError,
-    turnstileToken,
+    passedTurnstile,
     setUserNameCookie,
   ]);
 
+  // Toggles whether the user is trying to login or create an account.
   const toggleLoginCreate = useCallback(() => {
     setSubmitIsCreate(!submitIsCreate);
   }, [submitIsCreate]);
@@ -162,67 +168,93 @@ export default function LoginScreen(props: {
     }
   }, [submitIsCreate, submitCreateUser, submitLogin]);
 
+  useEffect(() => {
+    if (props.rememberedUserName.length) {
+      setUserName(props.rememberedUserName);
+    }
+  }, [props.rememberedUserName]);
+
   return (
     <Box
       sx={{
         height: "min(100%, 400px)",
-        maxWidth: "400px",
+        minWidth: "280px",
+        width: "100%",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-around",
+        alignItems: "center",
         textAlign: "center",
       }}
     >
-      <Typography variant="h6">
-        {"If you're new, pick a username and create your account 🙂"}
-      </Typography>
-      <form>
+      <Box sx={{ width: "100%" }}>
         <TextField
           name="username"
           type="text"
           variant="outlined"
           color="secondary"
           label="Username"
-          helperText={userNameError}
           value={userName}
-          onChange={(e) => setUserName(e.target.value)}
+          onChange={(e) => {
+            setUserName(e.target.value);
+            setTouchedUsername(true);
+          }}
           fullWidth
           required
-          sx={{ mb: 4 }}
         />
-        <TextField
-          name="password"
-          type="password"
-          variant="outlined"
-          color="secondary"
-          label="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          fullWidth
-          required
-          sx={{ mb: 4 }}
-        />
-        <SafeTurnstileWrapper />
-        <Row>
+        {touchedUsername && (
+          <Typography variant="body2" color="red">
+            {userNameError}
+          </Typography>
+        )}
+        <Box sx={{ margin: "12px 0px" }}>
+          <TextField
+            name="password"
+            type="password"
+            variant="outlined"
+            color="secondary"
+            label="Password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setTouchedPassword(true);
+            }}
+            fullWidth
+            required
+          />
+          {touchedPassword && (
+            <Typography variant="body2" color="red">
+              {passwordError}
+            </Typography>
+          )}
+        </Box>
+        {submitIsCreate && !passedTurnstile && <SafeTurnstileWrapper />}
+        <Button disabled={submitButtonDisabled} onClick={formSubmit}>
+          {submitIsCreate ? "Create Account" : "Log In"}
+        </Button>
+        <Box>
           <Typography variant="caption">
             {submitIsCreate ? "Already have an account? " : "No account yet?"}
-            <Link component="button" onClick={toggleLoginCreate}>
+            <Link
+              sx={{ paddingLeft: "4px" }}
+              component="button"
+              onClick={toggleLoginCreate}
+            >
               {submitIsCreate ? "Login here" : "Create account"}
             </Link>
           </Typography>
-          <Button disabled={submitButtonDisabled} onClick={formSubmit}>
-            {submitIsCreate ? "Create Account" : "Log In"}
-          </Button>
-        </Row>
-      </form>
+        </Box>
+      </Box>
       <Typography textAlign="center" color="red" variant="body1">
         {loginError}
       </Typography>
-      <Typography variant="body1">
-        {
-          "Don't forget your username and password! Maybe write them down somewhere 😅"
-        }
-      </Typography>
+      {submitIsCreate && (
+        <Typography variant="body1">
+          {"Don't forget your username and password! I recommend "}
+          <Link href="https://bitwarden.com/">Bitwarden</Link>
+          {" or another password manager"}
+        </Typography>
+      )}
     </Box>
   );
 }
