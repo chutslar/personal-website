@@ -34,14 +34,20 @@ import {
 import { getMysteryCategory } from "../utils/RosaryMysteries";
 import Row from "../components/Row";
 import { Chivo_Mono } from "next/font/google";
-import { makeRosaryCompletedRequest } from "../components/utils/makeApiRequests";
+import {
+  makeRosaryCompletedRequest,
+  makeUserDataRequest,
+} from "../components/utils/makeApiRequests";
 import { useMounted } from "../hooks/useMounted";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import tz from "dayjs/plugin/timezone";
+import UserData from "../types/UserData";
 
 dayjs.extend(utc);
+dayjs.extend(tz);
 
 const chivo = Chivo_Mono({ subsets: ["latin"] });
 
@@ -79,6 +85,7 @@ export default function RosaryTracker() {
   const [isPrayerDialogOpen, setPrayerDialogOpen] = useState(false);
   const [userName, setUserName] = useState<string | undefined>(undefined);
   const [errorMessage, setErrorMessage] = useState("");
+  const [userStreakMessage, setUserStreakMessage] = useState("");
 
   useEffectOnce(() => {
     const fetchData = async () => {
@@ -101,7 +108,35 @@ export default function RosaryTracker() {
     if (mounted) {
       const userNameCookie = getCookie("userName");
       if (userNameCookie) {
-        setUserName(userNameCookie);
+        const requestUserData = async () => {
+          const response = await makeUserDataRequest();
+          if (response.status == 200) {
+            const userData: UserData = await response.json();
+            // Calculate the updated streak
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            if (userData.lastRosaryDate && userData.currentStreak) {
+              const now = dayjs.utc().tz(timezone).startOf("day");
+              const lastRosary = dayjs
+                .utc(userData.lastRosaryDate)
+                .tz(timezone)
+                .startOf("day");
+              const daysBetweenNowAndLastRosary = now.diff(lastRosary, "day");
+              if (
+                daysBetweenNowAndLastRosary > 1 ||
+                daysBetweenNowAndLastRosary < 0
+              ) {
+                // Didn't do rosary yesterday, streak starts over
+                setUserStreakMessage("Your new streak starts today!");
+              } else {
+                setUserStreakMessage(
+                  `Keep your streak of ${userData.currentStreak} going!`,
+                );
+              }
+            }
+            setUserName(userNameCookie);
+          }
+        };
+        requestUserData();
       }
     }
   }, [mounted]);
@@ -138,186 +173,229 @@ export default function RosaryTracker() {
           );
           dispatch({ type: OActionType.ReverseDoneButton });
         } else {
+          const userStreakAsString: string = await response.json();
+          const userStreak = parseInt(userStreakAsString, 10);
+          if (userStreak == 1) {
+            setUserStreakMessage(
+              "Great job! A journey of a thousand miles begins with a single step!",
+            );
+          } else {
+            setUserStreakMessage(
+              `Congrats! Your streak is now up to ${userStreak} days! Keep it going tomorrow!`,
+            );
+          }
           setErrorMessage("");
         }
       }
     };
     submitDone();
-  }, [state, userName]);
+  }, [state, userName, setUserStreakMessage]);
 
   return (
     <Main>
-      <Box textAlign="center" sx={{ height: "100%", minWidth: "240px" }}>
+      <Box
+        className="rosary-app-box"
+        textAlign="center"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          minWidth: "240px",
+        }}
+      >
         <Typography variant="h5">Rosary Tracker</Typography>
         <Divider />
-        {state.mysteryResponseData && currentMystery && (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              alignItems: "center",
-              height: "100%",
-              paddingTop: "6px",
-            }}
-          >
-            {!userName && (
-              <Link href="/account">
-                <Typography variant="body2">
-                  Sign in to save progress
-                </Typography>
-              </Link>
-            )}
-            {userName && (
-              <Typography variant="body2">
-                Saving your progress as {userName}
-              </Typography>
-            )}
-            <Box>
-              <Typography variant="body1">
-                {dayjs(state.date).format("ddd MMM D")}
-              </Typography>
-              <Typography variant="h6" fontWeight="bold">
-                {state.mysteryResponseData.category}
-              </Typography>
-              <Typography variant="body1">{currentMystery.name}</Typography>
-            </Box>
-            {state.isInteractive && (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  maxWidth: "400px",
-                  justifyContent: "space-between",
-                  alignSelf: "center",
-                }}
-              >
-                <IconButton
-                  onClick={() => dispatch({ type: OActionType.PreviousPrayer })}
-                >
-                  <ChevronLeftSharp />
-                </IconButton>
-                <Row sx={{ justifyContent: "center" }}>
-                  <Typography style={{ alignSelf: "end" }} variant="body1">
-                    {fullRosary[state.mysteryIndex][state.prayerIndex].name}
+        {!state.hitDoneButton &&
+          state.mysteryResponseData &&
+          currentMystery && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-around",
+                alignItems: "center",
+                height: "100%",
+                paddingTop: "6px",
+              }}
+            >
+              {!userName && (
+                <Link href="/account">
+                  <Typography variant="subtitle1">
+                    Sign in to save progress
                   </Typography>
+                </Link>
+              )}
+              {userName && (
+                <Typography variant="subtitle1">
+                  Saving your progress as {userName}
+                </Typography>
+              )}
+              <Box>
+                <Typography variant="body1">
+                  {dayjs(state.date).format("ddd MMM D")}
+                </Typography>
+                <Typography variant="h6" fontWeight="bold">
+                  {state.mysteryResponseData.category}
+                </Typography>
+                <Typography variant="body1">{currentMystery.name}</Typography>
+              </Box>
+              {state.isInteractive && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    maxWidth: "400px",
+                    justifyContent: "space-between",
+                    alignSelf: "center",
+                  }}
+                >
                   <IconButton
-                    style={{ color: "var(--primary-color)" }}
-                    size="small"
-                    onClick={() => setPrayerDialogOpen(true)}
+                    onClick={() =>
+                      dispatch({ type: OActionType.PreviousPrayer })
+                    }
                   >
-                    <Info />
+                    <ChevronLeftSharp />
                   </IconButton>
-                  <Dialog
-                    open={isPrayerDialogOpen}
-                    keepMounted
-                    onClose={() => setPrayerDialogOpen(false)}
-                    aria-describedby="prayer-dialog"
-                  >
-                    <DialogTitle>
+                  <Row sx={{ justifyContent: "center" }}>
+                    <Typography style={{ alignSelf: "end" }} variant="body1">
                       {fullRosary[state.mysteryIndex][state.prayerIndex].name}
-                    </DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="prayer-text">
-                        <Typography variant="body2">
+                    </Typography>
+                    <IconButton
+                      style={{ color: "var(--primary-color)" }}
+                      size="small"
+                      onClick={() => setPrayerDialogOpen(true)}
+                    >
+                      <Info />
+                    </IconButton>
+                    <Dialog
+                      open={isPrayerDialogOpen}
+                      keepMounted
+                      onClose={() => setPrayerDialogOpen(false)}
+                      aria-describedby="prayer-dialog"
+                    >
+                      <DialogTitle>
+                        {fullRosary[state.mysteryIndex][state.prayerIndex].name}
+                      </DialogTitle>
+                      <DialogContent>
+                        <DialogContentText id="prayer-text" component="span">
                           <pre className={chivo.className}>
                             {
                               fullRosary[state.mysteryIndex][state.prayerIndex]
                                 .text
                             }
                           </pre>
-                        </Typography>
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button onClick={() => setPrayerDialogOpen(false)}>
-                        <Typography variant="button">Close</Typography>
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
-                </Row>
-                <IconButton
-                  onClick={() => dispatch({ type: OActionType.NextPrayer })}
-                >
-                  <ChevronRightSharp />
-                </IconButton>
-              </Box>
-            )}
-            <Card>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "center",
-                }}
-              >
-                <IconButton
-                  disableRipple
-                  disabled={state.mysteryIndex == 0}
-                  sx={{ color: "black" }}
-                  onClick={() =>
-                    dispatch({ type: OActionType.PreviousMystery })
-                  }
-                >
-                  <ChevronLeftSharp />
-                </IconButton>
-                <Image
-                  priority={true}
-                  src={currentMystery.image.image}
-                  style={{
-                    maxHeight: "500px",
-                    maxWidth: "min(500px, calc(100% - 60px))",
-                    height: "auto",
-                    width: "auto",
-                    padding: "8px",
-                  }}
-                  alt="Image for Mystery"
-                />
-                <IconButton
-                  disableRipple
-                  disabled={isLastMystery(state)}
-                  sx={{ color: "black" }}
-                  onClick={() => dispatch({ type: OActionType.NextMystery })}
-                >
-                  <ChevronRightSharp />
-                </IconButton>
-              </Box>
-              <Typography
-                sx={{ display: "block", maxWidth: "400px" }}
-                variant="caption"
-              >
-                {currentMystery.image.caption}
-              </Typography>
-            </Card>
-            <Row sx={{ justifyContent: "space-around" }}>
-              <Tooltip title="Prayer Guide">
-                <IconButton
-                  sx={{ color: "var(--primary-color)", paddingRight: "4px" }}
-                  onClick={() =>
-                    dispatch({ type: OActionType.ToggleInteractive })
-                  }
-                >
-                  <MenuBook />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Done">
-                <span>
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={() => setPrayerDialogOpen(false)}>
+                          <Typography variant="button">Close</Typography>
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+                  </Row>
                   <IconButton
-                    sx={{ color: "var(--primary-color)", paddingLeft: "4px" }}
-                    disabled={
-                      state.hitDoneButton ||
-                      !isLastMystery(state) ||
-                      (state.isInteractive && !isLastPrayer(state))
-                    }
-                    onClick={onDone}
+                    onClick={() => dispatch({ type: OActionType.NextPrayer })}
                   >
-                    <Check />
+                    <ChevronRightSharp />
                   </IconButton>
-                </span>
-              </Tooltip>
-            </Row>
-          </Box>
+                </Box>
+              )}
+              <Card>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                  }}
+                >
+                  <IconButton
+                    disableRipple
+                    disabled={state.mysteryIndex == 0}
+                    sx={{ color: "black" }}
+                    onClick={() =>
+                      dispatch({ type: OActionType.PreviousMystery })
+                    }
+                  >
+                    <ChevronLeftSharp />
+                  </IconButton>
+                  <Image
+                    priority={true}
+                    src={currentMystery.image.image}
+                    style={{
+                      maxHeight: "500px",
+                      maxWidth: "min(500px, calc(100% - 60px))",
+                      height: "auto",
+                      width: "auto",
+                      padding: "8px",
+                    }}
+                    alt="Image for Mystery"
+                  />
+                  <IconButton
+                    disableRipple
+                    disabled={isLastMystery(state)}
+                    sx={{ color: "black" }}
+                    onClick={() => dispatch({ type: OActionType.NextMystery })}
+                  >
+                    <ChevronRightSharp />
+                  </IconButton>
+                </Box>
+                <Tooltip title={currentMystery.image.caption}>
+                  <Typography
+                    sx={{ display: "block", maxWidth: "340px" }}
+                    variant="caption"
+                    noWrap
+                  >
+                    {currentMystery.image.caption}
+                  </Typography>
+                </Tooltip>
+              </Card>
+              <Row sx={{ justifyContent: "space-around" }}>
+                <Tooltip title="Prayer Guide">
+                  <IconButton
+                    sx={{ color: "var(--primary-color)", paddingRight: "4px" }}
+                    onClick={() =>
+                      dispatch({ type: OActionType.ToggleInteractive })
+                    }
+                  >
+                    <MenuBook />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Done">
+                  <span>
+                    <IconButton
+                      sx={{ color: "var(--primary-color)", paddingLeft: "4px" }}
+                      disabled={
+                        state.hitDoneButton ||
+                        !isLastMystery(state) ||
+                        (state.isInteractive && !isLastPrayer(state))
+                      }
+                      onClick={onDone}
+                    >
+                      <Check />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </Row>
+            </Box>
+          )}
+        {userName && (
+          <Typography variant="body1">{userStreakMessage}</Typography>
         )}
+        {state.hitDoneButton && (
+          <Card>
+            <Typography variant="body1">
+              <q>
+                My soul magnifies the Lord, and my spirit rejoices in God my
+                Savior
+              </q>
+            </Typography>
+            <Typography variant="subtitle2">- Luke 1:46-47</Typography>
+          </Card>
+        )}
+        <Typography noWrap variant="subtitle1">
+          {"See all your stats on your "}{" "}
+          <Link href="/account">account page</Link>
+        </Typography>
         <Typography variant="body1" color="red">
           {errorMessage}
         </Typography>

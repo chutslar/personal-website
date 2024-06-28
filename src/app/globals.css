@@ -16,6 +16,26 @@ pre {
   padding-top: 64px;
 }
 
+a {
+  color: var(--primary-color-dark);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+@media screen and (max-height: 999px) {
+  .main-elem {
+    padding: 60px 8px 8px 8px;
+  }
+}
+
+@media screen and (min-height: 1000px) {
+  .main-elem {
+    padding: 120px;
+  }
+}
+
 @media (orientation: landscape) {
   .drawer-box {
     padding-top: 48px;

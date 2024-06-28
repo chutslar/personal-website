@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
 
   const success = await updateUserData(db, userName, updates);
   if (success) {
-    return new Response("OK");
+    return new Response(updates.currentStreak?.toString());
   }
   return new Response("Failed to update data", {
     status: 500,

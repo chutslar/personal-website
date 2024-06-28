@@ -24,7 +24,7 @@ export function MainAppBar(props: {
             <Menu />
           </IconButton>
           <Link href="/">
-            <Typography variant="h6" paddingLeft="48px" noWrap component="div">
+            <Typography color="white" variant="h6" noWrap component="div">
               Christian Hutslar
             </Typography>
           </Link>

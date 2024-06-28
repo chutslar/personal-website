@@ -25,7 +25,7 @@ export function Main(props: { children: React.ReactNode }) {
   const [drawerState, toggleDrawerState] = React.useState(false);
   return (
     <main
-      className="flex flex-col items-center justify-between p-24"
+      className="flex flex-col items-center justify-between p-24 main-elem"
       style={{ height: "100%" }}
     >
       <Script id="console-warning">
