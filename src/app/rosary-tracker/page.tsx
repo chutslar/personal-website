@@ -246,7 +246,7 @@ export default function RosaryTracker() {
                 like Duolingo.
               </DialogContentText>
               <Row>
-                <MenuBook />
+                <MenuBook sx={{ color: "var(--primary-color)" }} />
                 <Typography variant="body2">
                   {
                     ": press this button to walk you through the prayers of each mystery"
@@ -254,7 +254,7 @@ export default function RosaryTracker() {
                 </Typography>
               </Row>
               <Row>
-                <Check />
+                <Check sx={{ color: "var(--primary-color)" }} />
                 <Typography variant="body2">
                   {
                     ": press this button when you've finished praying to save your progress"
