@@ -28,6 +28,7 @@ import {
   Check,
   ChevronLeftSharp,
   ChevronRightSharp,
+  Help,
   Info,
   MenuBook,
 } from "@mui/icons-material";
@@ -86,6 +87,8 @@ export default function RosaryTracker() {
   const [userName, setUserName] = useState<string | undefined>(undefined);
   const [errorMessage, setErrorMessage] = useState("");
   const [userStreakMessage, setUserStreakMessage] = useState("");
+  const [shouldIncrementStreak, setShouldIncrementStreak] = useState(true);
+  const [isHelpDialogOpen, setHelpDialogOpen] = useState(false);
 
   useEffectOnce(() => {
     const fetchData = async () => {
@@ -127,6 +130,11 @@ export default function RosaryTracker() {
               ) {
                 // Didn't do rosary yesterday, streak starts over
                 setUserStreakMessage("Your new streak starts today!");
+              } else if (daysBetweenNowAndLastRosary == 0) {
+                setUserStreakMessage(
+                  "You already prayed today, but you're always welcome to pray again",
+                );
+                setShouldIncrementStreak(false);
               } else {
                 setUserStreakMessage(
                   `Keep your streak of ${userData.currentStreak} going!`,
@@ -175,7 +183,9 @@ export default function RosaryTracker() {
         } else {
           const userStreakAsString: string = await response.json();
           const userStreak = parseInt(userStreakAsString, 10);
-          if (userStreak == 1) {
+          if (!shouldIncrementStreak) {
+            setUserStreakMessage("Enjoy your day, and may God bless you 🙏🏼");
+          } else if (userStreak == 1) {
             setUserStreakMessage(
               "Great job! A journey of a thousand miles begins with a single step!",
             );
@@ -189,7 +199,7 @@ export default function RosaryTracker() {
       }
     };
     submitDone();
-  }, [state, userName, setUserStreakMessage]);
+  }, [state, userName, setUserStreakMessage, shouldIncrementStreak]);
 
   return (
     <Main>
@@ -201,9 +211,64 @@ export default function RosaryTracker() {
           flexDirection: "column",
           height: "100%",
           minWidth: "240px",
+          alignItems: "center",
         }}
       >
-        <Typography variant="h5">Rosary Tracker</Typography>
+        <Row
+          sx={{
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="h5">Rosary Tracker</Typography>
+          <IconButton
+            sx={{ color: "var(--primary-color)" }}
+            onClick={() => setHelpDialogOpen(true)}
+          >
+            <Help />
+          </IconButton>
+          <Dialog
+            open={isHelpDialogOpen}
+            keepMounted
+            onClose={() => setHelpDialogOpen(false)}
+            aria-describedby="help-dialog"
+            sx={{ textAlign: "center" }}
+          >
+            <DialogTitle>Rosary Tracker</DialogTitle>
+            <DialogContent>
+              <DialogContentText sx={{ mb: "12px" }}>
+                Many Catholics{" "}
+                <Link href="https://en.wikipedia.org/wiki/Rosary">
+                  pray the rosary
+                </Link>{" "}
+                on a regular basis. This is a simple app to walk through the
+                steps of praying the rosary, and to keep track of them, a little
+                like Duolingo.
+              </DialogContentText>
+              <Row>
+                <MenuBook />
+                <Typography variant="body2">
+                  {
+                    ": press this button to walk you through the prayers of each mystery"
+                  }
+                </Typography>
+              </Row>
+              <Row>
+                <Check />
+                <Typography variant="body2">
+                  {
+                    ": press this button when you've finished praying to save your progress"
+                  }
+                </Typography>
+              </Row>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setHelpDialogOpen(false)}>
+                <Typography variant="button">Close</Typography>
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Row>
         <Divider />
         {!state.hitDoneButton &&
           state.mysteryResponseData &&
@@ -273,7 +338,7 @@ export default function RosaryTracker() {
                       onClose={() => setPrayerDialogOpen(false)}
                       aria-describedby="prayer-dialog"
                     >
-                      <DialogTitle>
+                      <DialogTitle sx={{ textAlign: "center" }}>
                         {fullRosary[state.mysteryIndex][state.prayerIndex].name}
                       </DialogTitle>
                       <DialogContent>
@@ -322,7 +387,7 @@ export default function RosaryTracker() {
                     priority={true}
                     src={currentMystery.image.image}
                     style={{
-                      maxHeight: "500px",
+                      maxHeight: "380px",
                       maxWidth: "min(500px, calc(100% - 60px))",
                       height: "auto",
                       width: "auto",
@@ -382,8 +447,16 @@ export default function RosaryTracker() {
           <Typography variant="body1">{userStreakMessage}</Typography>
         )}
         {state.hitDoneButton && (
-          <Card>
-            <Typography variant="body1">
+          <Card
+            sx={{
+              width: "240px",
+              margin: "40px",
+            }}
+          >
+            <Typography
+              sx={{ padding: "10px", textAlign: "start" }}
+              variant="body1"
+            >
               <q>
                 My soul magnifies the Lord, and my spirit rejoices in God my
                 Savior
