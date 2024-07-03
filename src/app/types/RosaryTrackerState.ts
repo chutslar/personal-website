@@ -1,6 +1,4 @@
-import Mystery from "./Mystery";
 import MysteryResponseData from "./MysteryResponseData";
-import PrayerRecord from "./PrayerRecord";
 
 type RosaryTrackerState = {
   mysteryResponseData?: MysteryResponseData;

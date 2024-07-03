@@ -6,11 +6,9 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Divider,
   IconButton,
-  Link as MuiLink,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -47,15 +45,14 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import tz from "dayjs/plugin/timezone";
 import UserData from "../types/UserData";
+import ParagraphsFromText from "../components/ParagraphsFromText";
+import ReadingDialog from "../components/ReadingDialog";
+import RosaryTrackerTitleWithHelp from "../components/RosaryTrackerTitleWithHelp";
 
 dayjs.extend(utc);
 dayjs.extend(tz);
 
 const vollkorn = Vollkorn({ subsets: ["latin"] });
-
-function splitTextToParagraphs(message: string) {
-  return message.split("<br/>").map((t, j) => <p key={j}>{t}</p>);
-}
 
 function initialState(): ReadonlyDeep<RosaryTrackerState> {
   return {
@@ -93,8 +90,6 @@ export default function RosaryTracker() {
   const [errorMessage, setErrorMessage] = useState("");
   const [userStreakMessage, setUserStreakMessage] = useState("");
   const [shouldIncrementStreak, setShouldIncrementStreak] = useState(true);
-  const [isHelpDialogOpen, setHelpDialogOpen] = useState(false);
-  const [isReadingOpen, setReadingOpen] = useState(false);
 
   useEffectOnce(() => {
     const fetchData = async () => {
@@ -224,69 +219,7 @@ export default function RosaryTracker() {
           alignItems: "center",
         }}
       >
-        <Row
-          sx={{
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Typography variant="h5">Rosary Tracker</Typography>
-          <IconButton
-            sx={{ color: "var(--primary-color)" }}
-            onClick={() => setHelpDialogOpen(true)}
-          >
-            <Help />
-          </IconButton>
-          <Dialog
-            open={isHelpDialogOpen}
-            keepMounted
-            onClose={() => setHelpDialogOpen(false)}
-            aria-describedby="help-dialog"
-            sx={{ textAlign: "center" }}
-          >
-            <DialogTitle>Rosary Tracker</DialogTitle>
-            <DialogContent>
-              <DialogContentText sx={{ mb: "12px" }}>
-                Many Catholics{" "}
-                <Link href="https://en.wikipedia.org/wiki/Rosary">
-                  pray the rosary
-                </Link>{" "}
-                on a regular basis. This is a simple app to walk through the
-                steps of praying the rosary, and to keep track of them, a little
-                like Duolingo.
-              </DialogContentText>
-              <Row>
-                <MenuBook sx={{ color: "var(--primary-color)" }} />
-                <Typography variant="body2">
-                  {
-                    ": press this button to walk you through the prayers of each mystery"
-                  }
-                </Typography>
-              </Row>
-              <Row>
-                <Check sx={{ color: "var(--primary-color)" }} />
-                <Typography variant="body2">
-                  {
-                    ": press this button when you've finished praying to save your progress"
-                  }
-                </Typography>
-              </Row>
-              <DialogContentText sx={{ mt: "12px" }}>
-                Each mystery is accompanied by one or more readings to help you
-                get in the mindset of the mystery. What does CCC mean?{" "}
-                <Link href="https://edmundmitchell.com/writing/how-to-use-a-catechism">
-                  Here
-                </Link>{" "}
-                is a guide on the Catechism and how to use it.
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setHelpDialogOpen(false)}>
-                <Typography variant="button">Close</Typography>
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Row>
+        <RosaryTrackerTitleWithHelp />
         <Divider />
         {!state.hitDoneButton &&
           state.mysteryResponseData &&
@@ -364,10 +297,12 @@ export default function RosaryTracker() {
                           className={vollkorn.className}
                           sx={{ color: "var(--dark-grey)" }}
                         >
-                          {splitTextToParagraphs(
-                            fullRosary[state.mysteryIndex][state.prayerIndex]
-                              .text,
-                          )}
+                          <ParagraphsFromText
+                            text={
+                              fullRosary[state.mysteryIndex][state.prayerIndex]
+                                .text
+                            }
+                          />
                         </Box>
                       </DialogContent>
                       <DialogActions>
@@ -385,45 +320,7 @@ export default function RosaryTracker() {
                 </Box>
               )}
               {currentMystery.messages[0] && (
-                <Box>
-                  <MuiLink
-                    component="button"
-                    onClick={() => setReadingOpen(true)}
-                    underline="hover"
-                  >
-                    Readings
-                  </MuiLink>
-                  <Dialog
-                    open={isReadingOpen}
-                    keepMounted
-                    onClose={() => setReadingOpen(false)}
-                    aria-describedby="reading-dialog"
-                    scroll="paper"
-                  >
-                    <Box sx={{ padding: "12px" }}>
-                      <DialogTitle sx={{ textAlign: "center" }}>
-                        {currentMystery.name} Readings
-                      </DialogTitle>
-                      <DialogContent
-                        className={vollkorn.className}
-                        sx={{ color: "var(--dark-grey)" }}
-                      >
-                        {currentMystery.messages.map((message, i) => (
-                          <Box key={i}>
-                            {splitTextToParagraphs(message.text)}
-                            <p>- {message.source}</p>
-                            <Divider sx={{ margin: "12px 0" }} />
-                          </Box>
-                        ))}
-                      </DialogContent>
-                      <DialogActions>
-                        <Button onClick={() => setReadingOpen(false)}>
-                          <Typography variant="button">Close</Typography>
-                        </Button>
-                      </DialogActions>
-                    </Box>
-                  </Dialog>
-                </Box>
+                <ReadingDialog currentMystery={currentMystery} />
               )}
               <Card>
                 <Box
