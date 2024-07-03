@@ -10,6 +10,7 @@ import {
   DialogTitle,
   Divider,
   IconButton,
+  Link as MuiLink,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -89,6 +90,7 @@ export default function RosaryTracker() {
   const [userStreakMessage, setUserStreakMessage] = useState("");
   const [shouldIncrementStreak, setShouldIncrementStreak] = useState(true);
   const [isHelpDialogOpen, setHelpDialogOpen] = useState(false);
+  const [isReadingOpen, setReadingOpen] = useState(false);
 
   useEffectOnce(() => {
     const fetchData = async () => {
@@ -261,6 +263,14 @@ export default function RosaryTracker() {
                   }
                 </Typography>
               </Row>
+              <DialogContentText sx={{ mt: "12px" }}>
+                Each mystery is accompanied by one or more readings to help you
+                get in the mindset of the mystery. What does CCC mean?{" "}
+                <Link href="https://edmundmitchell.com/writing/how-to-use-a-catechism">
+                  Here
+                </Link>{" "}
+                is a guide on the Catechism and how to use it.
+              </DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setHelpDialogOpen(false)}>
@@ -363,6 +373,49 @@ export default function RosaryTracker() {
                   >
                     <ChevronRightSharp />
                   </IconButton>
+                </Box>
+              )}
+              {currentMystery.messages[0] && (
+                <Box>
+                  <MuiLink
+                    component="button"
+                    onClick={() => setReadingOpen(true)}
+                    sx={{ color: "var(--primary-color-dark)" }}
+                    underline="hover"
+                  >
+                    Readings
+                  </MuiLink>
+                  <Dialog
+                    open={isReadingOpen}
+                    keepMounted
+                    onClose={() => setReadingOpen(false)}
+                    aria-describedby="reading-dialog"
+                    scroll="paper"
+                  >
+                    <Box sx={{ padding: "12px" }}>
+                      <DialogTitle sx={{ textAlign: "center" }}>
+                        {currentMystery.name} Readings
+                      </DialogTitle>
+                      <DialogContentText sx={{ color: "black" }}>
+                        {currentMystery.messages.map((message, i) => (
+                          <Box key={i}>
+                            <Typography>
+                              {message.text.split("<br/>").map((t, j) => (
+                                <p key={j}>{t}</p>
+                              ))}
+                            </Typography>
+                            <Typography>- {message.source}</Typography>
+                            <Divider sx={{ margin: "12px 0" }} />
+                          </Box>
+                        ))}
+                      </DialogContentText>
+                      <DialogActions>
+                        <Button onClick={() => setReadingOpen(false)}>
+                          <Typography variant="button">Close</Typography>
+                        </Button>
+                      </DialogActions>
+                    </Box>
+                  </Dialog>
                 </Box>
               )}
               <Card>
