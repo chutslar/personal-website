@@ -6,6 +6,7 @@
 :root {
   --primary-color: #237b93;
   --primary-color-dark: #155967;
+  --dark-grey: #282828;
 }
 pre {
   white-space: pre-wrap;

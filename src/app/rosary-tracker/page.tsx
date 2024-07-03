@@ -35,7 +35,7 @@ import {
 } from "@mui/icons-material";
 import { getMysteryCategory } from "../utils/RosaryMysteries";
 import Row from "../components/Row";
-import { Chivo_Mono } from "next/font/google";
+import { Vollkorn } from "next/font/google";
 import {
   makeRosaryCompletedRequest,
   makeUserDataRequest,
@@ -51,7 +51,11 @@ import UserData from "../types/UserData";
 dayjs.extend(utc);
 dayjs.extend(tz);
 
-const chivo = Chivo_Mono({ subsets: ["latin"] });
+const vollkorn = Vollkorn({ subsets: ["latin"] });
+
+function splitTextToParagraphs(message: string) {
+  return message.split("<br/>").map((t, j) => <p key={j}>{t}</p>);
+}
 
 function initialState(): ReadonlyDeep<RosaryTrackerState> {
   return {
@@ -142,6 +146,10 @@ export default function RosaryTracker() {
                   `Keep your streak of ${userData.currentStreak} going!`,
                 );
               }
+            } else {
+              setUserStreakMessage(
+                "Pray your first rosary today, and start a new habit!",
+              );
             }
             setUserName(userNameCookie);
           }
@@ -312,7 +320,7 @@ export default function RosaryTracker() {
                 <Typography variant="h6" fontWeight="bold">
                   {state.mysteryResponseData.category}
                 </Typography>
-                <Typography variant="body1">{currentMystery.name}</Typography>
+                <Typography variant="h6">{currentMystery.name}</Typography>
               </Box>
               {state.isInteractive && (
                 <Box
@@ -352,14 +360,15 @@ export default function RosaryTracker() {
                         {fullRosary[state.mysteryIndex][state.prayerIndex].name}
                       </DialogTitle>
                       <DialogContent>
-                        <DialogContentText id="prayer-text" component="span">
-                          <pre className={chivo.className}>
-                            {
-                              fullRosary[state.mysteryIndex][state.prayerIndex]
-                                .text
-                            }
-                          </pre>
-                        </DialogContentText>
+                        <Box
+                          className={vollkorn.className}
+                          sx={{ color: "var(--dark-grey)" }}
+                        >
+                          {splitTextToParagraphs(
+                            fullRosary[state.mysteryIndex][state.prayerIndex]
+                              .text,
+                          )}
+                        </Box>
                       </DialogContent>
                       <DialogActions>
                         <Button onClick={() => setPrayerDialogOpen(false)}>
@@ -380,7 +389,6 @@ export default function RosaryTracker() {
                   <MuiLink
                     component="button"
                     onClick={() => setReadingOpen(true)}
-                    sx={{ color: "var(--primary-color-dark)" }}
                     underline="hover"
                   >
                     Readings
@@ -396,19 +404,18 @@ export default function RosaryTracker() {
                       <DialogTitle sx={{ textAlign: "center" }}>
                         {currentMystery.name} Readings
                       </DialogTitle>
-                      <DialogContentText sx={{ color: "black" }}>
+                      <DialogContent
+                        className={vollkorn.className}
+                        sx={{ color: "var(--dark-grey)" }}
+                      >
                         {currentMystery.messages.map((message, i) => (
                           <Box key={i}>
-                            <Typography>
-                              {message.text.split("<br/>").map((t, j) => (
-                                <p key={j}>{t}</p>
-                              ))}
-                            </Typography>
-                            <Typography>- {message.source}</Typography>
+                            {splitTextToParagraphs(message.text)}
+                            <p>- {message.source}</p>
                             <Divider sx={{ margin: "12px 0" }} />
                           </Box>
                         ))}
-                      </DialogContentText>
+                      </DialogContent>
                       <DialogActions>
                         <Button onClick={() => setReadingOpen(false)}>
                           <Typography variant="button">Close</Typography>
@@ -459,9 +466,13 @@ export default function RosaryTracker() {
                 </Box>
                 <Tooltip title={currentMystery.image.caption}>
                   <Typography
-                    sx={{ display: "block", maxWidth: "340px" }}
+                    sx={{
+                      ...vollkorn.style,
+                      display: "block",
+                      maxWidth: "340px",
+                      textAlign: "start",
+                    }}
                     variant="caption"
-                    noWrap
                   >
                     {currentMystery.image.caption}
                   </Typography>
@@ -502,26 +513,36 @@ export default function RosaryTracker() {
         {state.hitDoneButton && (
           <Card
             sx={{
-              width: "240px",
+              width: "300px",
               margin: "40px",
             }}
           >
             <Typography
-              sx={{ padding: "10px", textAlign: "start" }}
-              variant="body1"
+              sx={{ ...vollkorn.style, padding: "10px", textAlign: "start" }}
+              variant="h5"
             >
               <q>
                 My soul magnifies the Lord, and my spirit rejoices in God my
                 Savior
               </q>
             </Typography>
-            <Typography variant="subtitle2">- Luke 1:46-47</Typography>
+            <Typography sx={vollkorn.style} variant="subtitle2">
+              - Luke 1:46-47
+            </Typography>
           </Card>
         )}
-        <Typography noWrap variant="subtitle1">
-          {"See all your stats on your "}{" "}
-          <Link href="/account">account page</Link>
-        </Typography>
+        {userName && (
+          <Typography noWrap variant="subtitle1">
+            {"See all your stats on your "}{" "}
+            <Link href="/account">account page</Link>
+          </Typography>
+        )}
+        {state.hitDoneButton && !userName && (
+          <Typography variant="subtitle1">
+            {"Next time save your progress by creating an"}{" "}
+            <Link href="/account">account</Link>
+          </Typography>
+        )}
         <Typography variant="body1" color="red">
           {errorMessage}
         </Typography>

@@ -5,54 +5,54 @@ const sign_cross_text =
   "In the name of the Father, and of the Son, and of the Holy Spirit. Amen.";
 
 const apostles_creed = "The Apostles' Creed";
-const apostles_creed_text = `I believe in God,
-the Father almighty,
-Creator of heaven and earth,
-and in Jesus Christ, his only Son, our Lord,
-who was conceived by the Holy Spirit,
-born of the Virgin Mary,
-suffered under Pontius Pilate,
-was crucified, died and was buried;
-he descended into hell;
-on the third day he rose again from the dead;
-he ascended into heaven,
-and is seated at the right hand of God the Father almighty;
-from there he will come to judge the living and the dead.
-I believe in the Holy Spirit,
-the holy catholic Church,
-the communion of saints,
-the forgiveness of sins,
-the resurrection of the body,
-and life everlasting.
+const apostles_creed_text = `I believe in God,<br/>
+the Father almighty,<br/>
+Creator of heaven and earth,<br/>
+and in Jesus Christ, his only Son, our Lord,<br/>
+who was conceived by the Holy Spirit,<br/>
+born of the Virgin Mary,<br/>
+suffered under Pontius Pilate,<br/>
+was crucified, died and was buried;<br/>
+he descended into hell;<br/>
+on the third day he rose again from the dead;<br/>
+he ascended into heaven,<br/>
+and is seated at the right hand of God the Father almighty;<br/>
+from there he will come to judge the living and the dead.<br/>
+I believe in the Holy Spirit,<br/>
+the holy catholic Church,<br/>
+the communion of saints,<br/>
+the forgiveness of sins,<br/>
+the resurrection of the body,<br/>
+and life everlasting.<br/>
 Amen.`;
 
 const our_father = "Our Father";
-const our_father_text = `Our Father, Who art in heaven,
-Hallowed be Thy Name.
-Thy Kingdom come.
-Thy Will be done,
-on earth as it is in Heaven.
-Give us this day our daily bread.
-And forgive us our trespasses,
-as we forgive those who trespass against us.
-And lead us not into temptation,
-but deliver us from evil.
+const our_father_text = `Our Father, Who art in heaven,<br/>
+Hallowed be Thy Name.<br/>
+Thy Kingdom come.<br/>
+Thy Will be done,<br/>
+on earth as it is in Heaven.<br/>
+Give us this day our daily bread.<br/>
+And forgive us our trespasses,<br/>
+as we forgive those who trespass against us.<br/>
+And lead us not into temptation,<br/>
+but deliver us from evil.<br/>
 Amen.`;
 
 const hail_mary = "Hail Mary";
-const hail_mary_text = `Hail, Mary, full of grace,
-the Lord is with thee.
-Blessed art thou amongst women
-and blessed is the fruit of thy womb, Jesus.
-Holy Mary, Mother of God,
-pray for us sinners,
-now and at the hour of our death.
+const hail_mary_text = `Hail, Mary, full of grace,<br/>
+the Lord is with thee.<br/>
+Blessed art thou amongst women<br/>
+and blessed is the fruit of thy womb, Jesus.<br/>
+Holy Mary, Mother of God,<br/>
+pray for us sinners,<br/>
+now and at the hour of our death.<br/>
 Amen.`;
 
 const glory_be = "Glory Be";
-const glory_be_text = `Glory be to the Father, and to the Son, and to the Holy Spirit;
-as it was in the beginning, is now, and ever shall be,
-world without end.
+const glory_be_text = `Glory be to the Father, and to the Son, and to the Holy Spirit;<br/>
+as it was in the beginning, is now, and ever shall be,<br/>
+world without end.<br/>
 Amen.`;
 
 const fatima_prayer = "The Fatima Prayer";
@@ -60,28 +60,28 @@ const fatima_prayer_text =
   "O my Jesus, forgive us our sins, save us from the fires of hell, and lead all souls to Heaven, especially those in most need of Thy mercy.";
 
 const hail_holy_queen = "Hail, Holy Queen";
-const hail_holy_queen_text = `Hail Holy Queen, Mother of mercy,
-Our life, our sweetness, and our hope.
-To thee do we cry, poor banished children of Eve;
-to thee do we send up our sighs,
-mourning and weeping in this valley of tears.
-Turn then, most gracious advocate,
-thine eyes of mercy toward us.
-And after this, our exile,
-show unto us the blessed fruit of thy womb, Jesus.
-O clement O loving O sweet Virgin Mary.
-Pray for us oh holy mother of God,
-that we may be made worthy of the promises of Christ.
+const hail_holy_queen_text = `Hail Holy Queen, Mother of mercy,<br/>
+Our life, our sweetness, and our hope.<br/>
+To thee do we cry, poor banished children of Eve;<br/>
+to thee do we send up our sighs,<br/>
+mourning and weeping in this valley of tears.<br/>
+Turn then, most gracious advocate,<br/>
+thine eyes of mercy toward us.<br/>
+And after this, our exile,<br/>
+show unto us the blessed fruit of thy womb, Jesus.<br/>
+O clement O loving O sweet Virgin Mary.<br/>
+Pray for us oh holy mother of God,<br/>
+that we may be made worthy of the promises of Christ.<br/>
 Amen.`;
 
 const concluding_prayer = "Concluding Prayer";
-const concluding_prayer_text = `Let us pray.
-O God, whose only begotten Son, by His life, death, and Resurrection,
-has purchased for us the rewards of eternal salvation.
-Grant, we beseech Thee,
-that while meditating on these mysteries of the most holy Rosary of the Blessed Virgin Mary,
-we may imitate what they contain
-and obtain what they promise, through Christ our Lord.
+const concluding_prayer_text = `Let us pray.<br/>
+O God, whose only begotten Son, by His life, death, and Resurrection,<br/>
+has purchased for us the rewards of eternal salvation.<br/>
+Grant, we beseech Thee,<br/>
+that while meditating on these mysteries of the most holy Rosary of the Blessed Virgin Mary,<br/>
+we may imitate what they contain<br/>
+and obtain what they promise, through Christ our Lord.<br/>
 Amen.`;
 
 const signOfTheCross = prayerRecord(sign_cross, sign_cross_text);
