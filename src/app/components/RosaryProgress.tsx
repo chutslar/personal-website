@@ -14,9 +14,35 @@ const offsetXByTotalPrayerIndex = [
   1633, 1865,
 ] as const;
 
+function getWindowDimensions() {
+  const { innerWidth: width, innerHeight: height } = window;
+  return {
+    width,
+    height,
+  };
+}
+
+function useWindowDimensions() {
+  const [windowDimensions, setWindowDimensions] = useState(
+    getWindowDimensions(),
+  );
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimensions());
+    }
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return windowDimensions;
+}
+
 export default function RosaryProgress(props: {
   state: ReadonlyDeep<RosaryTrackerState>;
 }) {
+  const { height } = useWindowDimensions();
   const [offsetX, adjustOffsetX] = useReducer(
     (state: number, target: number) => {
       return state < target
@@ -44,8 +70,8 @@ export default function RosaryProgress(props: {
       <RosaryLine
         viewBox={`${offsetX - 100} 0 300 160`}
         width={300}
-        height={160}
-        style={{ border: "1px black solid", borderRadius: "4px" }}
+        height={height > 1000 ? 160 : 100}
+        style={{ border: "2px black dashed", borderRadius: "22px" }}
       />
     </Box>
   );
