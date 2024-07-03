@@ -16,7 +16,7 @@ export { default as NativityImage } from "./nativity.jpg";
 export { default as NicoSleepingImage } from "./nico_sleeping.jpg";
 export { default as PresentationImage } from "./presentation.jpg";
 export { default as ResurrectionImage } from "./resurrection.jpg";
-export { default as RosaryLineSvgImage } from "./rosary_line.png";
+export { default as RosaryLineSvgImage } from "./rosary_line.svg";
 export { default as ScourgingImage } from "./scourging.jpg";
 export { default as SermonImage } from "./sermon.jpg";
 export { default as TransfigurationImage } from "./transfiguration.jpg";

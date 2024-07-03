@@ -17,7 +17,7 @@ import type MysteryResponseData from "../types/MysteryResponseData";
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { useEffectOnce } from "react-use";
 import createReducer from "../reducers/rosaryTrackerState/createReducer";
-import { ReadonlyDeep } from "type-fest";
+import type { ReadonlyDeep } from "type-fest";
 import type RosaryTrackerState from "../types/RosaryTrackerState";
 import OActionType from "../reducers/rosaryTrackerState/enums/OActionType";
 import type Mystery from "../types/Mystery";
@@ -48,6 +48,7 @@ import UserData from "../types/UserData";
 import ParagraphsFromText from "../components/ParagraphsFromText";
 import ReadingDialog from "../components/ReadingDialog";
 import RosaryTrackerTitleWithHelp from "../components/RosaryTrackerTitleWithHelp";
+import RosaryProgress from "../components/RosaryProgress";
 
 dayjs.extend(utc);
 dayjs.extend(tz);
@@ -319,6 +320,7 @@ export default function RosaryTracker() {
                   </IconButton>
                 </Box>
               )}
+              {state.isInteractive && <RosaryProgress state={state} />}
               {currentMystery.messages[0] && (
                 <ReadingDialog currentMystery={currentMystery} />
               )}
