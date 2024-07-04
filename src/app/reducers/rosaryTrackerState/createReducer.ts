@@ -12,7 +12,14 @@ export default function createReducer(): RosaryTrackerStateReducer {
   ): ReadonlyDeep<RosaryTrackerState> => {
     switch (action.type) {
       case OActionType.NextMystery: {
-        if (state.mysteryIndex < fullRosary.length - 1) {
+        if (state.pausedMysteryIndex) {
+          return {
+            ...state,
+            mysteryIndex: state.pausedMysteryIndex,
+            prayerIndex: 0,
+            pausedMysteryIndex: undefined,
+          };
+        } else if (state.mysteryIndex < fullRosary.length - 1) {
           return {
             ...state,
             mysteryIndex: state.mysteryIndex + 1,
@@ -82,6 +89,13 @@ export default function createReducer(): RosaryTrackerStateReducer {
           mysteryResponseData,
           prayerIndex: 0,
           mysteryIndex: 0,
+        };
+      }
+      case OActionType.SetPausedMysteryIndex: {
+        const { pausedMysteryIndex } = action;
+        return {
+          ...state,
+          pausedMysteryIndex,
         };
       }
       default:

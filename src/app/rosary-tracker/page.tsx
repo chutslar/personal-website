@@ -6,6 +6,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  DialogContentText,
   DialogTitle,
   Divider,
   IconButton,
@@ -20,14 +21,12 @@ import createReducer from "../reducers/rosaryTrackerState/createReducer";
 import type { ReadonlyDeep } from "type-fest";
 import type RosaryTrackerState from "../types/RosaryTrackerState";
 import OActionType from "../reducers/rosaryTrackerState/enums/OActionType";
-import type Mystery from "../types/Mystery";
 import Image from "next/image";
 import { fullRosary } from "../utils/Prayers";
 import {
   Check,
   ChevronLeftSharp,
   ChevronRightSharp,
-  Help,
   Info,
   MenuBook,
 } from "@mui/icons-material";
@@ -49,6 +48,9 @@ import ParagraphsFromText from "../components/ParagraphsFromText";
 import ReadingDialog from "../components/ReadingDialog";
 import RosaryTrackerTitleWithHelp from "../components/RosaryTrackerTitleWithHelp";
 import RosaryProgress from "../components/RosaryProgress";
+import RosaryPause from "../components/RosaryPause";
+import { isLastMystery, isLastPrayer } from "../utils/RosaryTrackerStateUtils";
+import OMysteryCategory from "../enums/OMysteryCategory";
 
 dayjs.extend(utc);
 dayjs.extend(tz);
@@ -65,20 +67,6 @@ function initialState(): ReadonlyDeep<RosaryTrackerState> {
   };
 }
 
-function getMystery(
-  state: ReadonlyDeep<RosaryTrackerState>,
-): ReadonlyDeep<Mystery> | undefined {
-  return state.mysteryResponseData?.mysteries[state.mysteryIndex];
-}
-
-function isLastMystery(state: ReadonlyDeep<RosaryTrackerState>): boolean {
-  return state.mysteryIndex >= fullRosary.length - 1;
-}
-
-function isLastPrayer(state: ReadonlyDeep<RosaryTrackerState>): boolean {
-  return state.prayerIndex >= fullRosary[state.mysteryIndex].length - 1;
-}
-
 export default function RosaryTracker() {
   const mounted = useMounted();
   const [state, dispatch] = useReducer(createReducer(), initialState());
@@ -91,6 +79,8 @@ export default function RosaryTracker() {
   const [errorMessage, setErrorMessage] = useState("");
   const [userStreakMessage, setUserStreakMessage] = useState("");
   const [shouldIncrementStreak, setShouldIncrementStreak] = useState(true);
+  const [isRestoredStateDialogOpen, setRestoredStateDialogOpen] =
+    useState(false);
 
   useEffectOnce(() => {
     const fetchData = async () => {
@@ -104,19 +94,78 @@ export default function RosaryTracker() {
           type: OActionType.SetMysteryResponseData,
           mysteryResponseData,
         });
+      } else {
+        setErrorMessage(
+          "Couldn't retrieve the rosary data, please wait and try again later.",
+        );
       }
     };
     fetchData();
   });
 
   useEffect(() => {
-    if (mounted) {
+    if (mounted && state.mysteryResponseData?.category) {
       const userNameCookie = getCookie("userName");
       if (userNameCookie) {
         const requestUserData = async () => {
           const response = await makeUserDataRequest();
           if (response.status == 200) {
             const userData: UserData = await response.json();
+            switch (state.mysteryResponseData?.category) {
+              case OMysteryCategory.Glorious: {
+                if (
+                  userData.pausedGloriousMysteryIndex &&
+                  userData.pausedGloriousMysteryIndex > 0
+                ) {
+                  dispatch({
+                    type: OActionType.SetPausedMysteryIndex,
+                    pausedMysteryIndex: userData.pausedGloriousMysteryIndex,
+                  });
+                  setRestoredStateDialogOpen(true);
+                }
+                break;
+              }
+              case OMysteryCategory.Joyful: {
+                if (
+                  userData.pausedJoyfulMysteryIndex &&
+                  userData.pausedJoyfulMysteryIndex > 0
+                ) {
+                  dispatch({
+                    type: OActionType.SetPausedMysteryIndex,
+                    pausedMysteryIndex: userData.pausedJoyfulMysteryIndex,
+                  });
+                  setRestoredStateDialogOpen(true);
+                }
+                break;
+              }
+              case OMysteryCategory.Luminous: {
+                if (
+                  userData.pausedLuminousMysteryIndex &&
+                  userData.pausedLuminousMysteryIndex > 0
+                ) {
+                  dispatch({
+                    type: OActionType.SetPausedMysteryIndex,
+                    pausedMysteryIndex: userData.pausedLuminousMysteryIndex,
+                  });
+                  setRestoredStateDialogOpen(true);
+                }
+                break;
+              }
+              case OMysteryCategory.Sorrowful: {
+                if (
+                  userData.pausedSorrowfulMysteryIndex &&
+                  userData.pausedSorrowfulMysteryIndex > 0
+                ) {
+                  dispatch({
+                    type: OActionType.SetPausedMysteryIndex,
+                    pausedMysteryIndex: userData.pausedSorrowfulMysteryIndex,
+                  });
+                  setRestoredStateDialogOpen(true);
+                }
+                break;
+              }
+            }
+
             // Calculate the updated streak
             const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             if (userData.lastRosaryDate && userData.currentStreak) {
@@ -153,7 +202,7 @@ export default function RosaryTracker() {
         requestUserData();
       }
     }
-  }, [mounted]);
+  }, [mounted, state.mysteryResponseData?.category]);
 
   const onKeyDown = (e: globalThis.KeyboardEvent) => {
     if (e.code === "ArrowLeft") {
@@ -235,6 +284,44 @@ export default function RosaryTracker() {
                 paddingTop: "6px",
               }}
             >
+              <Dialog
+                open={isRestoredStateDialogOpen}
+                keepMounted
+                onClose={() => setRestoredStateDialogOpen(false)}
+                aria-describedby="restored-state-dialog"
+                sx={{ textAlign: "center" }}
+              >
+                <DialogTitle>Restored Mystery</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    {`You paused in the middle of the last ${state.mysteryResponseData.category}. Do you want to pick up where you left off after praying the opening prayers?`}
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions
+                  sx={{
+                    justifyContent: "center",
+                  }}
+                >
+                  <Button
+                    onClick={() => {
+                      setRestoredStateDialogOpen(false);
+                    }}
+                  >
+                    Yes
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      dispatch({
+                        type: OActionType.SetPausedMysteryIndex,
+                        pausedMysteryIndex: undefined,
+                      });
+                      setRestoredStateDialogOpen(false);
+                    }}
+                  >
+                    No
+                  </Button>
+                </DialogActions>
+              </Dialog>
               {!userName && (
                 <Link href="/account">
                   <Typography variant="subtitle1">
@@ -358,7 +445,9 @@ export default function RosaryTracker() {
                     disableRipple
                     disabled={isLastMystery(state)}
                     sx={{ color: "black" }}
-                    onClick={() => dispatch({ type: OActionType.NextMystery })}
+                    onClick={() => {
+                      dispatch({ type: OActionType.NextMystery });
+                    }}
                   >
                     <ChevronRightSharp />
                   </IconButton>
@@ -388,6 +477,7 @@ export default function RosaryTracker() {
                     <MenuBook />
                   </IconButton>
                 </Tooltip>
+                <RosaryPause state={state} />
                 <Tooltip title="Done">
                   <span>
                     <IconButton
@@ -407,7 +497,9 @@ export default function RosaryTracker() {
             </Box>
           )}
         {userName && (
-          <Typography variant="body1">{userStreakMessage}</Typography>
+          <Typography width="300px" variant="body1">
+            {userStreakMessage}
+          </Typography>
         )}
         {state.hitDoneButton && (
           <Card

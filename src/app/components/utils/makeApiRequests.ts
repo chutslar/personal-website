@@ -67,3 +67,18 @@ export async function makeRosaryCompletedRequest(
 export async function makeUserDataRequest(): Promise<Response> {
   return await fetch("/api/userData");
 }
+
+export async function makeRosaryPauseRequest(
+  category: string,
+  mysteryIndex: number,
+): Promise<Response> {
+  return await fetch(
+    `/api/rosary/pause?category=${category}&mysteryIndex=${mysteryIndex}`,
+    {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+    },
+  );
+}

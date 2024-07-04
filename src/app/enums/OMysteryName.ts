@@ -24,7 +24,7 @@ const OMysteryName = {
   BaptismOfChristInTheJordan: "Baptism Of Christ In The Jordan",
   WeddingFeastAtCana: "Wedding Feast At Cana",
   JesusProclamationOfTheComingOfTheKingdomOfGod:
-    "Jesus Proclamation Of The Coming Of The Kingdom Of God",
+    "Jesus' Proclamation Of The Coming Of The Kingdom Of God",
   Transfiguration: "Transfiguration",
   InstitutionOfTheEucharist: "Institution Of The Eucharist",
 } as const;

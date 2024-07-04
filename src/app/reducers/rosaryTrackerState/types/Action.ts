@@ -6,6 +6,7 @@ import PreviousMystery from "../interfaces/PreviousMystery";
 import PreviousPrayer from "../interfaces/PreviousPrayer";
 import ReverseDoneButton from "../interfaces/ReverseDoneButton";
 import SetMysteryResponseData from "../interfaces/SetMysteryResponseData";
+import SetPausedMysteryIndex from "../interfaces/SetPausedMysteryIndex";
 
 type Action =
   | ToggleInteractive
@@ -14,6 +15,7 @@ type Action =
   | NextMystery
   | NextPrayer
   | SetMysteryResponseData
+  | SetPausedMysteryIndex
   | PreviousMystery
   | PreviousPrayer;
 

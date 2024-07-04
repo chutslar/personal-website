@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import Row from "./Row";
-import { Check, Help, MenuBook } from "@mui/icons-material";
+import { Check, Help, MenuBook, Pause } from "@mui/icons-material";
 import Link from "next/link";
 
 export default function RosaryTrackerTitleWithHelp() {
@@ -52,6 +52,17 @@ export default function RosaryTrackerTitleWithHelp() {
             <Typography variant="body2">
               {
                 ": press this button to walk you through the prayers of each mystery"
+              }
+            </Typography>
+          </Row>
+          <Row sx={{ alignItems: "center" }}>
+            <Pause sx={{ color: "var(--primary-color)" }} />
+            <Typography variant="body2" sx={{ paddingRight: "1px" }}>
+              :
+            </Typography>
+            <Typography variant="body2">
+              {
+                "press this button to pause where you are; the next day you are on the same mystery category, you'll be able to pick back up where you left off"
               }
             </Typography>
           </Row>
