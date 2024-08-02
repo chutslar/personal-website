@@ -86,17 +86,6 @@ export async function getUserData(
   };
 }
 
-function repeat(s: string, n: number, delimiter: string = "") {
-  if (s.length == 0 || n == 0) {
-    return "";
-  }
-  let result = s;
-  for (let i = 1; i < n; ++i) {
-    result += delimiter + s;
-  }
-  return result;
-}
-
 /**
  *
  * @param db The D1 database
@@ -135,22 +124,22 @@ export async function updateUserData(
     bindValues.push(updates.currentStreak);
     ++valuesCount;
   }
-  if (updates.pausedJoyfulMysteryIndex) {
+  if (updates.pausedJoyfulMysteryIndex !== undefined) {
     setStrings.push("pausedJoyfulMysteryIndex=? ");
     bindValues.push(updates.pausedJoyfulMysteryIndex);
     ++valuesCount;
   }
-  if (updates.pausedSorrowfulMysteryIndex) {
+  if (updates.pausedSorrowfulMysteryIndex !== undefined) {
     setStrings.push("pausedSorrowfulMysteryIndex=? ");
     bindValues.push(updates.pausedSorrowfulMysteryIndex);
     ++valuesCount;
   }
-  if (updates.pausedGloriousMysteryIndex) {
+  if (updates.pausedGloriousMysteryIndex !== undefined) {
     setStrings.push("pausedGloriousMysteryIndex=? ");
     bindValues.push(updates.pausedGloriousMysteryIndex);
     ++valuesCount;
   }
-  if (updates.pausedLuminousMysteryIndex) {
+  if (updates.pausedLuminousMysteryIndex !== undefined) {
     setStrings.push("pausedLuminousMysteryIndex=? ");
     bindValues.push(updates.pausedLuminousMysteryIndex);
     ++valuesCount;
