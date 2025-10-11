@@ -36,8 +36,11 @@ export async function POST(request: NextRequest) {
   }
 
   // Turnstile injects a token in "cf-turnstile-response".
-  const forwarded = request.headers.get("x-forwarded-for");
-  const ip = forwarded ? forwarded.split(/, /)[0] : request.ip;
+  const ip =
+    request.headers.get("cf-connecting-ip") ||
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "0.0.0.0";
   const { token } = turnstileVerifyParameters;
   if (!token || !ip) {
     return new Response("Missing required json field(s)", { status: 400 });
@@ -62,7 +65,7 @@ export async function POST(request: NextRequest) {
       getRequestContext().env.JWT_SECRETKEY,
     );
     if (turnstileToken) {
-      cookies().set("turnstile-token", turnstileToken, {
+      (await cookies()).set("turnstile-token", turnstileToken, {
         maxAge: dayjs.duration({ minutes: 30 }).asSeconds(),
       });
       const response = new NextResponse("", { status: 200 });

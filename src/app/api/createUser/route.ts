@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       user,
     );
     if (accessToken) {
-      cookies().set("access-token", accessToken, {
+      (await cookies()).set("access-token", accessToken, {
         maxAge: dayjs.duration({ days: 1 }).asSeconds(),
       });
       const response = new NextResponse("", { status: 200 });
