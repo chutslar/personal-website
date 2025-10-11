@@ -4,13 +4,6 @@ compatibility_date = "2025-09-11"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".vercel/output/static"
 
-[build]
-command = "npm run build"
-cwd = "."
-
-[build.environment]
-NODE_VERSION = "20"
-
 # Automatically place your workloads in an optimal location to minimize latency.
 # If you are running back-end logic in a Pages Function, running it closer to your back-end infrastructure
 # rather than the end user may result in better performance.
@@ -23,8 +16,8 @@ NODE_VERSION = "20"
 # - https://developers.cloudflare.com/pages/functions/bindings/#environment-variables
 # Note: Use secrets to store sensitive data.
 # - https://developers.cloudflare.com/pages/functions/bindings/#secrets
-# [vars]
-# MY_VARIABLE = "production_value"
+[vars]
+NODE_VERSION = "20"
 
 # Bind the Workers AI model catalog. Run machine learning models, powered by serverless GPUs, on Cloudflare’s global network
 # Docs: https://developers.cloudflare.com/pages/functions/bindings/#workers-ai
