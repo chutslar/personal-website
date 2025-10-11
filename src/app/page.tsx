@@ -17,8 +17,9 @@ export default function Home() {
       >
         <Typography variant="h3">Welcome!</Typography>
         <article>
-          I am a full-stack software developer from the US. You can learn more about me{" "}
-          <a href="/about-me">here</a>, or you can see some of the things I&apos;ve made:
+          I am a full-stack software developer from the US. You can learn more
+          about me <a href="/about-me">here</a>, or you can see some of the
+          things I&apos;ve made:
         </article>
         <Card
           sx={{
@@ -28,10 +29,13 @@ export default function Home() {
           }}
         >
           <Typography variant="h5">
-            <Link href="https://semi-useful-tools.com" target="_blank">Semi-Useful Tools</Link>
+            <Link href="https://semi-useful-tools.com" target="_blank">
+              Semi-Useful Tools
+            </Link>
           </Typography>
           <Typography variant="body1">
-            A portfolio website with several nifty tools like a voice recorder, to-do app, etc.
+            A portfolio website with several nifty tools like a voice recorder,
+            to-do app, etc.
           </Typography>
         </Card>
         <Card
