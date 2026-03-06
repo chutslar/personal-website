@@ -1,6 +1,13 @@
+# Old, Archived Personal Website
+
+I rewrote my website to SvelteKit both because I like Svelte and also because the old website was accruing a bunch of vulnerabilities which I could only
+resolve a major version upgrade of Next.js. The repo for the new website is [here](https://github.com/chutslar/personal-website-svelte).
+
+## Original README.md
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`c3`](https://developers.cloudflare.com/pages/get-started/c3).
 
-## Getting Started
+### Getting Started
 
 First, run the development server:
 
@@ -16,7 +23,7 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Cloudflare integration
+### Cloudflare integration
 
 Besides the `dev` script mentioned above `c3` has added a few extra scripts that allow you to integrate the application with the [Cloudflare Pages](https://pages.cloudflare.com/) environment, these are:
 
@@ -26,7 +33,7 @@ Besides the `dev` script mentioned above `c3` has added a few extra scripts that
 
 > **Note:** while the `dev` script is optimal for local development you should preview your Pages application as well (periodically or before deployments) in order to make sure that it can properly work in the Pages environment (for more details see the [`@cloudflare/next-on-pages` recommended workflow](https://github.com/cloudflare/next-on-pages/blob/05b6256/internal-packages/next-dev/README.md#recommended-workflow))
 
-### Bindings
+#### Bindings
 
 Cloudflare [Bindings](https://developers.cloudflare.com/pages/functions/bindings/) are what allows you to interact with resources available in the Cloudflare Platform.
 
@@ -38,7 +45,7 @@ You can use bindings during development, when previewing locally your applicatio
 
 - To use bindings in the deployed application you will need to configure them in the Cloudflare [dashboard](https://dash.cloudflare.com/). For more details see the [Pages Bindings documentation](https://developers.cloudflare.com/pages/functions/bindings/).
 
-#### KV Example
+##### KV Example
 
 `c3` has added for you an example showing how you can use a KV binding.
 
